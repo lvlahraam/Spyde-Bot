@@ -47,7 +47,7 @@ class ButtonView(discord.ui.View):
                 self.add_item(item=ButtonUI(emoji=self.help.emojis.get(cog.qualified_name), label=cog.qualified_name, style=discord.ButtonStyle.blurple, custom_id=cog.qualified_name, view=self))
         self.add_item(item=ButtonUI(emoji="💣", label="Delete", style=discord.ButtonStyle.red, custom_id="delete", view=self))
 
-    async def interaction_check(self, interaction:discord.Interaction):
+    async def interaction_check(self, item, interaction:discord.Interaction):
         if interaction.user.id == self.help.context.author.id: return True
         icheckmbed = discord.Embed(
             color=self.help.context.bot.color,

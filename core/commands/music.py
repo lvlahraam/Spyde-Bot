@@ -120,7 +120,7 @@ class ViewPlayer(discord.ui.View):
             return await interaction.response.send_message(F"Lyrics: Didn't find any, {self.ctx.voice_client.current.title} - {self.ctx.voice_client.current.author}", ephemeral=True)
         return await interaction.response.send_message.send("Lyrics: Nothing is playing", ephemeral=True)
 
-    async def interaction_check(self, interaction:discord.Interaction):
+    async def interaction_check(self, item, interaction:discord.Interaction):
         if self.ctx.voice_client:
             if interaction.user.voice:
                 for member in self.ctx.me.voice.channel.members:
