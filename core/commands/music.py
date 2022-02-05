@@ -9,6 +9,7 @@ class ViewPlayer(discord.ui.View):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.music = music
+        self.add_item(item=discord.ui.Button(emoji="🔗", url=self.ctx.voice_client.current.uri))
 
     @discord.ui.button(emoji="⏯", style=discord.ButtonStyle.green)
     async def ue(self, button:discord.ui.Button, interaction:discord.Interaction):
@@ -167,10 +168,22 @@ class Music(commands.Cog, description="Jamming out with these!"):
     @commands.guild_only()
     @commands.check(full_voice)
     async def player(self, ctx:commands.Context):
+        prmbed = discord.Embed(
+            color=self.bot.color,
+            title="Now Playing:",
+            timestamp=ctx.voice_client.current.ctx.message.created_at
+        )
+        prmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
-            await ctx.invoke(self.nowplaying)
-            return await ctx.reply("Pemgu.Player.exe", view=ViewPlayer(ctx, self))
-        return await ctx.reply("Nothing is playing")
+            prmbed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
+            prmbed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
+            prmbed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
+            prmbed.add_field(name="Duration", value=F"{self.bar(ctx.voice_client.current.position, ctx.voice_client.current.length)} | {self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
+            if len(ctx.voice_client.lqueue) > 2: prmbed.add_field(name="Next:", value=ctx.voice_client.lqueue[1], inline=False)
+            prmbed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
+            return await ctx.reply(embed=prmbed, view=ViewPlayer(ctx, self))
+        prmbed.title = "Nothing is playing"
+        return await ctx.reply(embed=prmbed)
 
     # Join
     @commands.command(name="join", aliases=["jn"], help="Joins a voice channel")
