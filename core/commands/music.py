@@ -183,7 +183,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
             timestamp=ctx.message.created_at
         )
         jnmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if ctx.voice.author.channel: channel = channel or ctx.author.voice.channel
+        if ctx.author.voice.channel: channel = channel or ctx.author.voice.channel
         if not ctx.me.voice:
             if channel.permissions_for(ctx.me).connect:
                 self.bot.pomice.get_best_node(algorithm=pomice.enums.NodeAlgorithm.by_ping)
