@@ -1,3 +1,4 @@
+# NOTE: THIS BOT DOES NOT DOWNLOAD FILE ON THE DIRECTORY
 import discord, pomice, re, asyncio, datetime
 from discord.ext import commands
 from core.views import confirm, pagination
