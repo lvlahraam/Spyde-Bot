@@ -77,7 +77,7 @@ class ViewPlayer(discord.ui.View):
             npmbed.add_field(name="Title:", value=self.ctx.voice_client.current.title, inline=False)
             npmbed.add_field(name="By:", value=self.ctx.voice_client.current.author, inline=False)
             npmbed.add_field(name="Requester:", value=self.ctx.voice_client.current.requester.mention, inline=False)
-            npmbed.add_field(name="Duration", value=F"{self.bar(self.ctx.voice_client.current.position, self.ctx.voice_client.current.length)} | {self.duration(self.ctx.voice_client.position)} - {self.duration(self.ctx.voice_client.current.length)}", inline=False)
+            npmbed.add_field(name="Duration", value=F"{self.music.bar(self.ctx.voice_client.current.position, self.ctx.voice_client.current.length)} | {self.music.duration(self.ctx.voice_client.position)} - {self.music.duration(self.ctx.voice_client.current.length)}", inline=False)
             if len(self.ctx.voice_client.lqueue) > 1: npmbed.add_field(name="Next:", value=self.ctx.voice_client.lqueue[1], inline=False)
             npmbed.set_thumbnail(url=self.ctx.voice_client.current.thumbnail or discord.Embed.Empty)
             npmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
