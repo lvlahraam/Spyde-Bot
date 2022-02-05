@@ -64,6 +64,11 @@ class ViewPagination(discord.ui.View):
         self.counter.label = F"1/{len(self.pages)}"
         return await interaction.response.send_message(embed=self.pages[0], view=self, ephemeral=True) if interaction else await self.ctx.reply(embed=self.pages[0], view=self) 
 
+    async def on_timeout(self):
+        if self.children:
+            self.clear_items()
+            await self.message.edit(content="Timed-out", view=self)
+
     async def interaction_check(self, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.message.author.id:
             icheckmbed = discord.Embed(

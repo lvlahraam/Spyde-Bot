@@ -19,6 +19,11 @@ class ViewConfirm(discord.ui.View):
         self.clear_items()
         await interaction.response.edit_message(content="Cancelled", view=button.view)
         self.stop()
+
+    async def on_timeout(self):
+        if self.children:
+            self.clear_items()
+            await self.message.edit(content="Timed-out", view=self)
     
     async def interaction_check(self, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.message.author.id:
