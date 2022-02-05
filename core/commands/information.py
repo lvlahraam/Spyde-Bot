@@ -128,8 +128,8 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             title=F"{member.name}'s Permissions",
             timestamp=ctx.message.created_at
         )
-        if len(ai) > 0: permsmbed.add_field(name="Allowed:", value="\n".join(a for a in ai))
-        if len(di) > 0: permsmbed.add_field(name="Denied:", value="\n".join(d for d in di))
+        if len(ai) > 0: permsmbed.add_field(name="Allowed:", value="\n".join(a for a in ai), inline=False)
+        if len(di) > 0: permsmbed.add_field(name="Denied:", value="\n".join(d for d in di), inline=False)
         permsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.reply(embed=permsmbed)
 

@@ -16,13 +16,13 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        bnmbed.add_field(name="User:", value=member.mention)
-        bnmbed.add_field(name="Moderator:", value=ctx.author.mention)
-        bnmbed.add_field(name="Reason:", value=reason)
+        bnmbed.add_field(name="User:", value=member.mention, inline=False)
+        bnmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        bnmbed.add_field(name="Reason:", value=reason, inline=False)
         bnmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             bnmbed.title = "Banned:"
-            await ctx.guild.ban(member, reason=F"{ctx.author}\n{reason}")
+            await ctx.guild.ban(member, reason=reason)
         else:
             bnmbed.title = "You can't ban this user!"
         await ctx.reply(embed=bnmbed)
@@ -39,9 +39,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             title="Unbanned:",
             timestamp=ctx.message.created_at
         )
-        unmbed.add_field(name="User:", value=user.mention)
-        unmbed.add_field(name="Moderator:", value=ctx.author.mention)
-        unmbed.add_field(name="Reason:", value=reason)
+        unmbed.add_field(name="User:", value=user.mention, inline=False)
+        unmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        unmbed.add_field(name="Reason:", value=reason, inline=False)
         unmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.guild.unban(user)
         await ctx.reply(embed=unmbed)
@@ -58,9 +58,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             
             timestamp=ctx.message.created_at
         )
-        kcmbed.add_field(name="Member:", value=member.mention)
-        kcmbed.add_field(name="Moderator:", value=ctx.author.mention)
-        kcmbed.add_field(name="Reason:", value=reason)
+        kcmbed.add_field(name="Member:", value=member.mention, inline=False)
+        kcmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        kcmbed.add_field(name="Reason:", value=reason, inline=False)
         kcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             kcmbed.title = "Kicked:"
@@ -81,9 +81,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        tombed.add_field(name="Member:", value=member.mention)
-        tombed.add_field(name="Moderator:", value=ctx.author.mention)
-        tombed.add_field(name="Member:", value=reason)
+        tombed.add_field(name="Member:", value=member.mention, inline=False)
+        tombed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        tombed.add_field(name="Member:", value=reason, inline=False)
         tombed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             if option == "untimeout":
@@ -124,9 +124,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             title="Slowdown:",
             timestamp=ctx.message.created_at
         )
-        smmbed.add_field(name="Channel:", value=channel.mention)
-        smmbed.add_field(name="Slowmode:", value=times)
-        smmbed.add_field(name="Moderator:", value=ctx.author.mention)
+        smmbed.add_field(name="Channel:", value=channel.mention, inline=False)
+        smmbed.add_field(name="Slowmode:", value=times, inline=False)
+        smmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
         smmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         seconds = {
             "0seconds": 0,
@@ -167,9 +167,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        lcmbed.add_field(name="Channel:", value=channel.mention)
-        lcmbed.add_field(name="Moderator:", value=ctx.author.mention)
-        lcmbed.add_field(name="Reason:", value=reason)
+        lcmbed.add_field(name="Channel:", value=channel.mention, inline=False)
+        lcmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        lcmbed.add_field(name="Reason:", value=reason, inline=False)
         lcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not channel.permissions_for(ctx.guild.default_role).send_messages:
             lcmbed.title = "Is already locked:"
@@ -199,9 +199,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        ulcmbed.add_field(name="Channel:", value=channel.mention)
-        ulcmbed.add_field(name="Moderator:", value=ctx.author.mention)
-        ulcmbed.add_field(name="Reason:", value=reason)
+        ulcmbed.add_field(name="Channel:", value=channel.mention, inline=False)
+        ulcmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        ulcmbed.add_field(name="Reason:", value=reason, inline=False)
         ulcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if channel.permissions_for(ctx.guild.default_role).send_messages:
             ulcmbed.title = "Is already unlocked:"

@@ -73,7 +73,7 @@ class CustomHelp(commands.HelpCommand):
             "Game": "🕹️",
             "Information": "🔎",
             "Moderation": "🎩",
-            "Music": "🎵",
+            "Music": "🎶",
             "Owner": "👑",
             "Settings": "🔧",
             "Utility": "🧰"
@@ -82,8 +82,8 @@ class CustomHelp(commands.HelpCommand):
     # Help Main
     async def send_bot_help(self, mapping):
         view = ButtonView(self, mapping)
-        view.homepage.add_field(name="Prefix:", value=self.context.prefix or "In DM you don't need to use prefix")
-        view.homepage.add_field(name="Arguments:", value="[] means the argument is optional.\n<> means the argument is required.\n***DO NOT TYPE THESE WHEN USING A COMMAND***")
+        view.homepage.add_field(name="Prefix:", value=self.context.prefix or "In DM you don't need to use prefix", inline=False)
+        view.homepage.add_field(name="Arguments:", value="[] means the argument is optional.\n<> means the argument is required.\n***DO NOT TYPE THESE SYMBOLS WHEN USING A COMMAND***", inline=False)
         view.homepage.set_thumbnail(url=self.context.me.display_avatar.url)
         view.homepage.set_author(name=self.context.author, icon_url=self.context.author.display_avatar.url)
         view.message = await self.context.reply(embed=view.homepage, view=view)
