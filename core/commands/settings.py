@@ -254,7 +254,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 return await ctx.reply(embed=tkmbed)
             cag = await ctx.guild.create_category("Tickets")
             await self.bot.postgres.execute("INSERT INTO tickets(guild_name,guild_id,cag,num) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, cag.id, 1)
-            ch = await cag.create_text_channel(F"Open", reason=F"Setting up a ticketer", topic=F"Opening a ticket")
+            ch = await cag.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"Opening a ticket")
             await ch.set_permissions(ctx.guild.default_role, send_messages=False)
             tkmbed.title += " has been turned on"
             tkmbed.description = F"Tickets are now created in {cag.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command `.ticket Off` to turn off the ticketer\nYou can see the status of the ticketer with `.ticket Status`"

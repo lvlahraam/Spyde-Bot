@@ -61,7 +61,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         )
         notelistmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar)
         if not notes: 
-            notelistmbed.title = F"{user} doesn't have any note"
+            notelistmbed.title = F"{user.name} doesn't have any note"
             return await ctx.reply(embed=notelistmbed)
         tasks = []
         counter = 0

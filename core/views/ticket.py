@@ -18,7 +18,7 @@ class CloseTicketView(discord.ui.View):
             timestamp=interaction.message.created_at,
         )
         tkclosmbed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
-        await interaction.channel.edit(name=F"{interaction.channel.name}-closed", reason="Closed Ticket", topic=F"{interaction.channel.topic} - Closed by {interaction.user}")
+        await interaction.channel.edit(name=F"{interaction.channel.name}-closed", reason=F"{interaction.user} closed the ticket", topic=F"{interaction.channel.topic} - Closed by {interaction.user}")
         await interaction.response.edit_message(view=button.view)
         await interaction.followup.send(embed=tkclosmbed)
         await interaction.channel.set_permissions(self.opener, view_channel=False)

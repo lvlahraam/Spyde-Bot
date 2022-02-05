@@ -167,7 +167,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
                 break
         else:
             symbed.color = self.bot.color
-            symbed.title = F"{member} is not listening to Spotify"
+            symbed.title = F"{member.name} is not listening to Spotify"
             await ctx.reply(embed=symbed)
 
     # Icon

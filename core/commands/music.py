@@ -112,16 +112,23 @@ class ViewPlayer(discord.ui.View):
         if self.ctx.voice_client.is_playing or self.ctx.voice_client.is_paused:
             lyrics = await self.ctx.bot.openrobot.lyrics(F"{self.ctx.voice_client.current.title}{f' - {self.ctx.voice_client.current.artist}' if not '-' in str(self.ctx.voice_client.current.title) else ''}")
             if lyrics.lyrics:
-                lymbed = discord.Embed(
+                lys = lyrics.lyrics.split('\n')
+                es = []
+                paginator = commands.Paginator(prefix=None, suffix=None)
+                for l in lys:
+                    paginator.add_line(l)
+                for page in paginator.pages:
+                    lymbed = discord.Embed(
                     color=self.ctx.bot.color,
-                    title=lyrics.title,
-                    description=lyrics.lyrics[:4096],
-                    timestamp=self.ctx.message.created_at
-                )
-                lymbed.set_thumbnail(url=lyrics.images.track or discord.Embed.Empty)
-                lymbed.set_author(name=lyrics.artist, icon_url=lyrics.images.background or discord.Embed.Empty)
-                lymbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
-                return await interaction.response.send_message(embed=lymbed, ephemeral=True)
+                        title=lyrics.title,
+                        description=page,
+                        timestamp=self.ctx.message.created_at
+                    )
+                    lymbed.set_thumbnail(url=lyrics.images.track or discord.Embed.Empty)
+                    lymbed.set_author(name=lyrics.artist, icon_url=lyrics.images.background or discord.Embed.Empty)
+                    lymbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
+                    es.append(lymbed)
+                return await pagination.ViewPagination(self.ctx, es).start(interaction) if len(es) > 1 else await interaction.response.send_message(embed=es[0], ephemeral=True)
             return await interaction.response.send_message(F"Lyrics: Didn't find any, {self.ctx.voice_client.current.title} - {self.ctx.voice_client.current.author}", ephemeral=True)
         return await interaction.response.send_message.send("Lyrics: Nothing is playing", ephemeral=True)
 
@@ -521,11 +528,23 @@ class Music(commands.Cog, description="Jamming out with these!"):
             else: raise commands.CheckFailure("Since I'm not in a voice channel you need to pass a music")
         lyrics = await self.bot.openrobot.lyrics(music)
         if lyrics.lyrics:
-            lymbed.title = lyrics.title
-            lymbed.description = lyrics.lyrics[:4096]
-            lymbed.set_thumbnail(url=lyrics.images.track or discord.Embed.Empty)
-            lymbed.set_author(name=lyrics.artist, icon_url=lyrics.images.background or discord.Embed.Empty)
-            return await ctx.reply(embed=lymbed)
+            lys = lyrics.lyrics.split('\n')
+            es = []
+            paginator = commands.Paginator(prefix=None, suffix=None)
+            for l in lys:
+                paginator.add_line(l)
+            for page in paginator.pages:
+                lymbed = discord.Embed(
+                color=self.bot.color,
+                    title=lyrics.title,
+                    description=page,
+                    timestamp=ctx.message.created_at
+                )
+                lymbed.set_thumbnail(url=lyrics.images.track or discord.Embed.Empty)
+                lymbed.set_author(name=lyrics.artist, icon_url=lyrics.images.background or discord.Embed.Empty)
+                lymbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+                es.append(lymbed)
+            return await pagination.ViewPagination(ctx, es).start() if len(es) > 1 else await ctx.reply(embed=es[0], ephemeral=True)
         lymbed.description = F"Didn't find any lyrics for {music}"
         return await ctx.reply(embed=lymbed)
 

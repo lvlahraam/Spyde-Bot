@@ -43,7 +43,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         unmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
         unmbed.add_field(name="Reason:", value=reason, inline=False)
         unmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        await ctx.guild.unban(user)
+        await ctx.guild.unban(user, reason)
         await ctx.reply(embed=unmbed)
 
     # Kick
@@ -64,10 +64,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         kcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             kcmbed.title = "Kicked:"
-            await ctx.guild.ban(member, reason=F"{ctx.author}\n{reason}")
+            await ctx.guild.kick(member, reason=reason)
         else:
             kcmbed.title = "You can't kick this user!"
-        await ctx.guild.kick(user=member, reason=reason)
         await ctx.reply(embed=kcmbed)
 
     # Timeout
@@ -117,8 +116,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
-    async def slowmode(self, ctx:commands.Context, times:typing.Literal["0seconds", "5seconds", "10seconds", "15seconds", "30seconds", "1minutes", "2minutes", "5minutes", "10minutes", "15minutes", "30minutes", "1hour", "2hour", "6hour"]=commands.Option(description="The seconds for slowmode"), channel:typing.Union[discord.TextChannel, discord.Thread]=commands.Option(description="The channel you want to change the slowmode of", default=None)):
+    async def slowmode(self, ctx:commands.Context, times:typing.Literal["0seconds", "5seconds", "10seconds", "15seconds", "30seconds", "1minutes", "2minutes", "5minutes", "10minutes", "15minutes", "30minutes", "1hour", "2hour", "6hour"]=commands.Option(description="The seconds for slowmode"), channel:typing.Union[discord.TextChannel, discord.Thread]=commands.Option(description="The channel you want to change the slowmode of", default=None), *, reason:str=commands.Option(description="The reason for changing the slowmode", default=None)):
         channel = channel or ctx.channel
+        reason = reason or "Unspecified"
         smmbed = discord.Embed(
             color=self.bot.color,
             title="Slowdown:",
@@ -144,7 +144,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             "2hour": 7200,
             "6hour": 21600
         }
-        await channel.edit(reason=F"Channel: {channel.mention}\nSeconds: {times}\nBy: {ctx.author}", slowmode_delay=seconds[times])
+        await channel.edit(reason=reason, slowmode_delay=seconds[times])
         await ctx.reply(embed=smmbed)
 
     # Lock
