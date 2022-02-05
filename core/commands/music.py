@@ -72,9 +72,13 @@ class ViewPlayer(discord.ui.View):
             npmbed = discord.Embed(
                 color=self.ctx.bot.color,
                 title="Playing:",
-                description=F"Title: {self.ctx.voice_client.current.title}\nBy: {self.ctx.voice_client.current.author}\nRequester: {self.ctx.voice_client.current.requester.mention}\nDuration: {self.music.bar(self.ctx.voice_client.position, self.ctx.voice_client.current.length)} | {self.music.duration(self.ctx.voice_client.position)} - {self.music.duration(self.ctx.voice_client.current.length)}\n{f'Next: {self.ctx.voice_client.lqueue[1]}' if len(self.ctx.voice_client.lqueue) > 2 else ''}",
                 timestamp=self.ctx.voice_client.current.ctx.message.created_at
             )
+            npmbed.add_field(name="Title:", value=self.ctx.voice_client.current.title, inline=False)
+            npmbed.add_field(name="By:", value=self.ctx.voice_client.current.author, inline=False)
+            npmbed.add_field(name="Requester:", value=self.ctx.voice_client.current.requester.mention, inline=False)
+            npmbed.add_field(name="Duration", value=F"{self.bar(self.ctx.voice_client.current.position, self.ctx.voice_client.current.length)} | {self.duration(self.ctx.voice_client.position)} - {self.duration(self.ctx.voice_client.current.length)}", inline=False)
+            if len(self.ctx.voice_client.lqueue) > 2: npmbed.add_field(name="Next:", value=self.ctx.voice_client.lqueue[1], inline=False)
             npmbed.set_thumbnail(url=self.ctx.voice_client.current.thumbnail or discord.Embed.Empty)
             npmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
             view = discord.ui.View()
@@ -430,10 +434,10 @@ class Music(commands.Cog, description="Jamming out with these!"):
             timestamp=ctx.message.created_at
         )
         qucrmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if not ctx.voice_client.queue.empty():
+        if len(ctx.voice_client.lqueue) > 2:
             await ctx.invoke(self.queue)
             view = confirm.ViewConfirm(ctx)
-            viewmessage = await ctx.reply("Do you want to clear the queue", view=view)
+            viewmessage = await ctx.reply("Do you want to clear the queue?", view=view)
             await view.wait()
             if view.value:
                 for _ in range(ctx.voice_client.queue.qsize()):
@@ -530,13 +534,13 @@ class Music(commands.Cog, description="Jamming out with these!"):
         tsmbed = discord.Embed(
             color=self.bot.color,
             title="Playing:",
-            description=F"Title: {track.title}\nBy: {track.author}\nRequester: {track.requester.mention}\nDuration: {self.duration(track.length)}\n{f'Next: {player.lqueue[1]}' if len(player.lqueue) > 2 else ''}",
             timestamp=track.ctx.message.created_at
         )
         tsmbed.add_field(name="Title:", value=track.title, inline=False)
         tsmbed.add_field(name="By:", value=track.author, inline=False)
         tsmbed.add_field(name="Requester:", value=track.requester.mention, inline=False)
         tsmbed.add_field(name="Duration", value=F"{self.duration(track.length)}", inline=False)
+        if len(player.lqueue) > 2: tsmbed.add_field(name="Next:", value=player.lqueue[1], inline=False)
         tsmbed.set_thumbnail(url=track.thumbnail or discord.Embed.Empty)
         tsmbed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
         view = discord.ui.View()
