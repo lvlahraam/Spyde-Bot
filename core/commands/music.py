@@ -176,14 +176,14 @@ class Music(commands.Cog, description="Jamming out with these!"):
     @commands.command(name="join", aliases=["jn"], help="Joins a voice channel")
     @commands.guild_only()
     @commands.check(user_voice)
-    async def join(self, ctx:commands.Context, channel:discord.VoiceChannel=commands.Option(description="The voice channel you want the bot to join", default=None)):
+    async def join(self, ctx:commands.Context):
         jnmbed = discord.Embed(
             color=self.bot.color,
             title="Join:",
             timestamp=ctx.message.created_at
         )
         jnmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if ctx.author.voice.channel: channel = channel or ctx.author.voice.channel
+        channel = ctx.author.voice.channel
         if not ctx.me.voice:
             if channel.permissions_for(ctx.me).connect:
                 self.bot.pomice.get_best_node(algorithm=pomice.enums.NodeAlgorithm.by_ping)
@@ -194,7 +194,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 ctx.voice_client.loop = None
                 jnmbed.description = F"Joined the voice channel {ctx.author.voice.channel.mention}"
                 return await ctx.reply(embed=jnmbed)
-            jnmbed.description = "I don't have permission to join that channel"
+            jnmbed.description = F"I don't have permission to join {channel.mention}"
             return await ctx.reply(embed=jnmbed)
         jnmbed.description = F"Someone else is using to me in {ctx.me.voice.channel.mention}"
         return await ctx.reply(embed=jnmbed)

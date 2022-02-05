@@ -17,7 +17,7 @@ class OnReady(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(F"Readied as: {self.bot.user} - {self.bot.user.id}\nReady in discord.")
-        await self.bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.watching, name=F"over Sym {len(self.bot.guilds)} - .shelp / Observers™"))
+        await self.bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.watching, name=F"over Sym {len(self.bot.guilds)} | .shelp"))
 
 class OnDisconnect(commands.Cog):
     def __init__(self, bot):
