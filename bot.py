@@ -47,7 +47,7 @@ class SymBase(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.prefixes = {}
-        self.default_prefix = ".s"
+        self.default_prefix = ",s"
         self.afks = {}
         self._commands = []
         for command in sorted(os.listdir("./core/commands/")):
