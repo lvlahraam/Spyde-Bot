@@ -1,7 +1,9 @@
-import discord, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random, json
+import discord, logging, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random, json
 from core.views import confirm, pagination
 import core.utils.help as help
 from discord.ext import commands
+
+logging.basicConfig(level=logging.INFO)
 
 async def create_pool_postgres():
     bot.postgres = await asyncpg.create_pool(dsn=os.getenv("DATABASE_URL"))
