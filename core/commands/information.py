@@ -159,12 +159,12 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         member = member or ctx.author
         if ctx.interaction:
             await ctx.interaction.response.defer()
-            new_member = (await ctx.guild.query_members([member.id], presences=True))[0]
+            member = (await ctx.guild.query_members([member.id], presences=True))[0]
         symbed = discord.Embed(
             timestamp=ctx.message.created_at
         )
         symbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        for activity in new_member.activities:
+        for activity in member.activities:
             if isinstance(activity, discord.Spotify):
                 params = {
                     'title': activity.title,
