@@ -586,7 +586,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         await track.ctx.reply(embed=tsmbed, view=view)
         while player.is_playing or player.is_paused:
             if track.ctx.me.voice:
-                if track.ctx.me.voice.channnl.members > 1:
+                if track.ctx.me.voice.channel.members > 1:
                     await player.destroy()
 
     @commands.Cog.listener()
