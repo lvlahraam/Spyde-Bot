@@ -69,7 +69,7 @@ class ViewPagination(discord.ui.View):
             self.clear_items()
             await self.message.edit(content="Timed-out", view=self)
 
-    async def interaction_check(self, item, interaction:discord.Interaction):
+    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.message.author.id:
             icheckmbed = discord.Embed(
                 color=self.ctx.bot.color,

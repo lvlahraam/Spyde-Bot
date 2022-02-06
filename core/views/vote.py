@@ -57,7 +57,7 @@ class ViewVote(discord.ui.View):
         if self.vote == self.voters: return
         if self.vote != self.voters: return await self.ctx.send(content=F"Voting for {self.usage} has been ended\nVotes didn't reach the needed amount {self.voters}", view=self.view)
 
-    async def interaction_check(self, item, interaction:discord.Interaction):
+    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if self.ctx.voice_client:
             if interaction.user.voice:
                 for member in self.ctx.me.voice.channel.members:

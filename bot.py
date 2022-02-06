@@ -78,12 +78,6 @@ class SymBase(commands.AutoShardedBot):
         color = random.choice(colors)
         return color
 
-    async def confirm(self, ctx):
-        return await confirm.ViewConfirm(ctx)
-
-    async def pagination(self, ctx, pages):
-        return await pagination.ViewPagination(ctx, pages).start()
-
     def trim(self, text: str, limit: int):
         text = text.strip()
         if len(text) > limit: return text[:limit-3] + "..."

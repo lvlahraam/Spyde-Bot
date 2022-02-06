@@ -22,9 +22,10 @@ class OnMessage(commands.Cog):
             omafkmbed = discord.Embed(
                 color=self.bot.color,
                 title="Removed your AFK",
-                description=F"Reason: **{self.bot.afks[message.author.id]['reason']}**\nSince: **{discord.utils.format_dt(self.bot.afks[message.author.id]['time'], style='R')}**",
                 timestamp=message.created_at
             )
+            omafkmbed.add_field(name="Reason:", value=self.bot.afks[message.author.id], inline=False)
+            omafkmbed.add_field(name="Since:", value=discord.utils.format_dt(self.bot.afks[message.author.id]["time"], style="R"), inline=False)
             omafkmbed.set_footer(text=message.author, icon_url=message.author.display_avatar.url)
             await message.reply(embed=omafkmbed, view=view)
             del self.bot.afks[message.author.id]

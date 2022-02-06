@@ -282,7 +282,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 tkmbed.title += " is turned off"
                 return await ctx.reply(embed=tkmbed)
             tkmbed.title += " message has been sent"
-            await ctx.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
+            await ctx.reply(embed=tkviewmbed, view=ticket.TicketView(self.bot))
             return await ctx.reply(embed=tkmbed)
 
     # Leave

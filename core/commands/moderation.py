@@ -89,10 +89,10 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
                 if member.timeout_until:
                     tombed.title = "UnTimed-out"
                     await member.edit(timeout_until=None, reason=reason)
-                    return await ctx.send(embed=tombed)
+                    return await ctx.reply(embed=tombed)
                 tombed.title = "UnTimed-out Failed"
                 tombed.description = "The member is not timed-out"
-                return await ctx.send(embed=tombed)
+                return await ctx.reply(embed=tombed)
             times = {
                 "1minutes": 1,
                 "5minutes": 5,
@@ -109,7 +109,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             await member.edit(timeout_until=until, reason=reason)
         else:
             tombed.title = "You can't (un)timeout this user!"
-        await ctx.send(embed=tombed)
+        await ctx.reply(embed=tombed)
 
     # Slowmode
     @commands.command(name="slowmode", aliases=["sm"], help="Changes the slowmode of this or the given channel to the given seconds")

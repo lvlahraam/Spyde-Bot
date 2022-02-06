@@ -17,10 +17,25 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         abmbed.add_field(name="Platform:", value=sys.platform, inline=False)
         abmbed.add_field(name="Python Version:", value=sys.version, inline=False)
         abmbed.add_field(name="Discord.py Version:", value=discord.__version__, inline=False)
+        abmbed.add_field(name="Commands:", value=len(self.bot.commands), inline=False)
+        abmbed.add_field(name="Guilds:", value=len(self.bot.guilds), inline=False)
         abmbed.add_field(name="Uptime:", value=F"{discord.utils.format_dt(self.bot.uptime, style='f')} ({discord.utils.format_dt(self.bot.uptime, style='R')})", inline=False)
         abmbed.add_field(name="Developer:", value="Mahraam#5124 (494496285676535811)", inline=False)
         abmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.reply(embed=abmbed)
+
+    # Invite
+    @commands.command(name="invite", aliases=["inv"], help="Gives an invite link for the bot")
+    async def invite(self, ctx:commands.Context):
+        invmbed = discord.Embed(
+            color=self.bot.color,
+            title="Here is the invite link for the bot",
+            timestamp=ctx.message.created_at
+        )
+        invmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        invite = discord.utils.oauth_url(self.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'application.commands'])
+        view = discord.ui.View().add_item(item=discord.ui.Button(emoji="🔗", label="Invite URL", url=invite))
+        await ctx.reply(embed=invmbed, view=view)
 
     # Ping
     @commands.command(name="ping", aliases=["pi"], help="Shows bot's ping")
@@ -32,14 +47,19 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         unpimbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         tstart = time.perf_counter()
+        pstart = time.perf_counter()
+        await self.bot.postgres.execute("SELECT 1")
         unpimsg = await ctx.reply(embed=unpimbed)
         tend = time.perf_counter()
+        pend = time.perf_counter()
         dopimbed = discord.Embed(
             color=self.bot.color,
             title="🏓 Pong:",
-            description=F"Websocket: {self.bot.latency*1000}ms\nTyping: {(tend-tstart)*1000}ms",
             timestamp=ctx.message.created_at
         )
+        dopimbed.add_field(name="Websocket:", value=F"{self.bot.latency*1000}ms", inline=False)
+        dopimbed.add_field(name="Typing:", value=F"{(tend-tstart)*1000}ms", inline=False)
+        dopimbed.add_field(name="Postgres:", value=F"{(pend-pstart)*1000}", inline=False)
         dopimbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await unpimsg.edit(embed=dopimbed)
 
@@ -67,7 +87,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         brmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if fetch.banner:
-            await ctx.send(embed=brmbed)
+            await ctx.reply(embed=brmbed)
             brmbed.set_image(url=fetch.banner.url)
         else: brmbed.title = F"{user.name} doesn't have banner"
         await ctx.reply(embed=brmbed)
@@ -137,18 +157,19 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
     @commands.command(name="spotify", aliases=["sy"], help="Shows info about yours or the given member's spotify activity")
     async def spotify(self, ctx:commands.Context, member:discord.Member=commands.Option(description="The member to get the spotify activity of", default=None)):
         member = member or ctx.author
+        new_member = (await ctx.guild.query_members([member.id], presences=True))[0]
         symbed = discord.Embed(
             timestamp=ctx.message.created_at
         )
         symbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        for activity in member.activities:
+        for activity in new_member.activities:
             if isinstance(activity, discord.Spotify):
                 params = {
                     'title': activity.title,
                     'cover_url': activity.album_cover_url,
                     'duration_seconds': activity.duration.seconds,
                     'start_timestamp': activity.start.timestamp(),
-                    'artists': activity.artists[0]
+                    'artists': activity.artists[:3]
                 }
                 session = await self.bot.session.get("https://api.jeyy.xyz/discord/spotify", params=params)
                 response = io.BytesIO(await session.read())
@@ -209,7 +230,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             F"***Default-Role:*** {ctx.guild.default_role.mention}",
             F"***Boost-Role:*** {ctx.guild.premium_subscriber_role.mention or '*No boost-role*'}",
             F"***Boost-Level:*** {ctx.guild.premium_tier}",
-            F"***Boosters:*** {', '.join(self.bot.trim(booster.name, 20) for booster in ctx.guild.premium_subscribers)}",
+            F"***Boosters:*** {', '.join(ctx.guild.premium_subscribers[:10])}",
             F"***Categories:*** {len(ctx.guild.categories)}",
             F"***Channels:*** {len(ctx.guild.channels)}",
             F"***AFK-Channel:*** {ctx.guild.afk_channel.mention or '*No AFK channel*'}",

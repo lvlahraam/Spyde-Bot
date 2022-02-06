@@ -9,7 +9,7 @@ class DeleteView(discord.ui.View):
     async def delete(self, button:discord.ui.Button, interaction:discord.Interaction):
         await interaction.message.delete()
     
-    async def interaction_check(self, item, interaction:discord.Interaction):
+    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.message.author.id:
             icheckmbed = discord.Embed(
                 color=self.ctx.bot.color,
