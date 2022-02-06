@@ -158,7 +158,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
     async def spotify(self, ctx:commands.Context, member:discord.Member=commands.Option(description="The member to get the spotify activity of", default=None)):
         member = member or ctx.author
         await ctx.defer()
-        member = (await ctx.guild.query_members([member.id], presences=True))[0]
+        member = (await ctx.guild.query_members(user_ids=[member.id], presences=True))[0]
         symbed = discord.Embed(
             timestamp=ctx.message.created_at
         )
