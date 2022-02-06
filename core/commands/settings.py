@@ -204,6 +204,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         byechmbed = discord.Embed(
             color=self.bot.color,
             title="Goodbye channel has been changed to:",
+            description=channel.mention,
             timestamp=ctx.message.created_at
         )
         byechmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
