@@ -7,7 +7,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         self.bot = bot
 
     # Prefix
-    @commands.group(name="prefix", aliases=["pf"], help="Setting up the prefix with these, Consider using subcommands", invoke_without_command=True)
+    @commands.command(name="prefix", aliases=["pf"], help="Setting up the prefix with these, Consider using subcommands", invoke_without_command=True)
     @commands.guild_only()
     async def prefix(self, ctx:commands.Context, options:typing.Literal["set", "reset", "show"]=commands.Option(description="The option you want to use"), *, prefix:str=commands.Option(description="The prefix you want to be set", default=None)):
         pfmbed = discord.Embed(
