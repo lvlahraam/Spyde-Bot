@@ -487,23 +487,23 @@ class Music(commands.Cog, description="Jamming out with these!"):
                         seconds = data[datacounter][:numIndex] 
                     datacounter += 1
                 except: pass
-            if hours and minutes and seconds:
-                dtime = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
-                mtime = dtime.seconds*1000
-                print(dtime, mtime)
-                if not (mtime) >= ctx.voice_client.current.length:
-                    sembed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
-                    sembed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
-                    sembed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
-                    sembed.add_field(name="Duration", value=F"{self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
-                    sembed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
-                    view = discord.ui.View()
-                    view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
-                    await ctx.voice_client.seek(mtime)
-                    return await ctx.reply(embed=sembed, view=view)
-                sembed.description = "Seek time is greater than the duration of the song"
+            if hours is None and minutes is None and seconds is None:
+                sembed.description = "You must pass a valid time, e.g. `1h 2m 30s`"
                 return await ctx.reply(embed=sembed)
-            sembed.description = "You must pass a valid time, e.g. `1h 2m 30s`"
+            dtime = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+            mtime = dtime.seconds*1000
+            print(dtime, mtime)
+            if not (mtime) >= ctx.voice_client.current.length:
+                sembed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
+                sembed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
+                sembed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
+                sembed.add_field(name="Duration", value=F"{self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
+                sembed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
+                view = discord.ui.View()
+                view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
+                await ctx.voice_client.seek(mtime)
+                return await ctx.reply(embed=sembed, view=view)
+            sembed.description = "Seek time is greater than the duration of the song"
             return await ctx.reply(embed=sembed)
         sembed.description = "Nothing is playing"
         return await ctx.reply(embed=sembed)
