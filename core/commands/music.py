@@ -164,7 +164,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
     def user_voice(ctx:commands.Context):
         if ctx.author.voice:
             return True
-        raise commands.CheckFailure("You must be in voice channel")
+        raise commands.CheckFailure("You must be in voice channel") if not ctx.me.voice or not ctx.me.voice.channel else commands.CheckFailure(F"You must be in voice channel, {ctx.me.voice.channel.mention}")
 
     def full_voice(ctx:commands.Context):
         if ctx.me.voice:
@@ -172,7 +172,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 if ctx.me.voice.channel == ctx.author.voice.channel:
                     return True
                 raise commands.CheckFailure(F"You must be in the same voice channel, {ctx.me.voice.channel.mention}")
-            raise commands.CheckFailure("You must be in voice channel")
+            raise commands.CheckFailure("You must be in voice channel") if not ctx.me.voice or not ctx.me.voice.channel else commands.CheckFailure(F"You must be in voice channel, {ctx.me.voice.channel.mention}")
         raise commands.CheckFailure("I'm not in a voice channel")
 
     # Player
@@ -251,9 +251,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
         plmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not ctx.voice_client:
             await ctx.invoke(self.join)
-        if not ctx.author.voice:
-            plmbed.description = "You must be in a voice channel"
-            return await ctx.reply(embed=plmbed)
         if ctx.me.voice.channel == ctx.author.voice.channel:
             results = await ctx.voice_client.get_tracks(query=term, ctx=ctx)
             print(results)
