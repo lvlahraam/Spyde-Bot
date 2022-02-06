@@ -239,10 +239,10 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=dcmbed)
 
     # Play
-    @commands.command(name="play", aliases=["pl"], help="Plays music with the given term, term can be a url or a query or a playlist")
+    @commands.command(name="play", aliases=["pl"], help="Plays music with the given query, the query can be a url or a title or a playlist")
     @commands.guild_only()
     @commands.check(user_voice)
-    async def play(self, ctx:commands.Context, *, term:str=commands.Option(description="The term you want the music from")):
+    async def play(self, ctx:commands.Context, *, query:str=commands.Option(description="The query you want the music from")):
         plmbed = discord.Embed(
             color=self.bot.color,
             title="Play",
@@ -252,10 +252,10 @@ class Music(commands.Cog, description="Jamming out with these!"):
         if not ctx.voice_client:
             await ctx.invoke(self.join)
         if ctx.me.voice.channel == ctx.author.voice.channel:
-            results = await ctx.voice_client.get_tracks(query=term, ctx=ctx)
+            results = await ctx.voice_client.get_tracks(query=query, ctx=ctx)
             print(results)
             if not results:
-                plmbed.description = "No results were found for that search term."
+                plmbed.description = "No results were found for that query."
                 return await ctx.reply(embed=plmbed)
             if isinstance(results, pomice.Playlist):
                 for track in results.tracks:
@@ -462,7 +462,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
     @commands.command(name="seek", aliases=["se"], help="Seeks to the given time")
     @commands.guild_only()
     @commands.check(full_voice)
-    async def seek(self, ctx:commands.Context, *, time:str=commands.Option(description="Time you want to seek to")):
+    async def seek(self, ctx:commands.Context, *, time:str=commands.Option(description="The time you want to seek to (split by space)")):
         sembed = discord.Embed(
             color=self.bot.color,
             title="Seek:",
@@ -470,10 +470,27 @@ class Music(commands.Cog, description="Jamming out with these!"):
         )
         sembed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
-            if ":" in time:
-                time = time.split(":")
-                dtime = datetime.timedelta(hours=int(time[0]), minutes=int(time[1]), seconds=int(time[2]))
+            data = time.split(" ")
+            datacounter = 0
+            dates = ['h', 'm', 's']
+            hours = None
+            minutes = None
+            seconds = None
+            for item in dates:
+                try:
+                    numIndex = data[datacounter].index(item)
+                    if item == "h":
+                        hours = data[datacounter][:numIndex] 
+                    if item == "m": 
+                        minutes = data[datacounter][:numIndex] 
+                    if item == "s":
+                        seconds = data[datacounter][:numIndex] 
+                    datacounter += 1
+                except: pass
+            if hours and minutes and seconds:
+                dtime = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
                 mtime = dtime.seconds*1000
+                print(dtime, mtime)
                 if not (mtime) >= ctx.voice_client.current.length:
                     sembed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
                     sembed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
@@ -484,8 +501,12 @@ class Music(commands.Cog, description="Jamming out with these!"):
                     view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
                     await ctx.voice_client.seek(mtime)
                     return await ctx.reply(embed=sembed, view=view)
-                return await ctx.reply(F"Time needs to be between 0 or {self.duration(ctx.voice_client.current.length)}")
-            return await ctx.reply(F"Time need to be like 0:1:23")
+                sembed.description = "Seek time is greater than the duration of the song"
+                return await ctx.reply(embed=sembed)
+            sembed.description = "You must pass a valid time, e.g. `1h 2m 30s`"
+            return await ctx.reply(embed=sembed)
+        sembed.description = "Nothing is playing"
+        return await ctx.reply(embed=sembed)
 
     # Volume
     @commands.command(name="volume", aliases=["vol"], help="Sets or Tells the volume of the music")
