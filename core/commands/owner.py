@@ -52,7 +52,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
                 await ctx.reply(F"```py\n{value}{ret}\n```")
 
     # Load
-    @commands.command(name="load", help="Loads the given cog")
+    @commands.command(name="load", aliases=["ld"], help="Loads the given cog")
     @commands.is_owner()
     async def load(self, ctx:commands.Context, *, cog:str=commands.Option(description="The cog's name you want to load")):
         loadmbed = discord.Embed(
@@ -65,7 +65,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
         await ctx.reply(embed=loadmbed)
 
     # Unload
-    @commands.command(name="unload", help="Unloads the given cog")
+    @commands.command(name="unload", aliases=["uld"], help="Unloads the given cog")
     @commands.is_owner()
     async def unload(self, ctx:commands.Context, *, cog:commands.Option(description="The cog's name you want to unload")):
         unloadmbed = discord.Embed(
@@ -78,7 +78,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
         await ctx.reply(embed=unloadmbed)
   
     # Reload
-    @commands.command(name="reload", help="Reloads the given or every cog")
+    @commands.command(name="reload", aliases=["rld"], help="Reloads the given or every cog")
     @commands.is_owner()
     async def reload(self, ctx:commands.Context, *, cog:str=commands.Option(description="The cog'(s) name you want to reload", default=None)):
         reloadmbed = discord.Embed(
@@ -110,7 +110,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
         await ctx.reply(embed=reloadmbed)
 
     # Toggle
-    @commands.command(name="toggle", help="Toggles on and off the given command")
+    @commands.command(name="toggle", toggle=["tg"], help="Toggles on and off the given command")
     @commands.is_owner()
     async def toggle(self, ctx:commands.Context, command:str):
         command = self.bot.get_command(command)
@@ -135,7 +135,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
         await self.bot.close()
 
     # Blacklist
-    @commands.command(name="blacklist", help="Puts-in or Puts-out the given user from blacklist")
+    @commands.command(name="blacklist", aliases=["bl"], help="Puts-in or Puts-out the given user from blacklist")
     @commands.is_owner()
     async def blacklist(self, ctx:commands.Context, user:discord.User=commands.Option(description="The user you want to blacklist", default=None), *, reason:str=commands.Option(description="The reason for blacklisting the user", default=None)):
         reason = reason or "Unspecified"
@@ -148,7 +148,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
             blacklistsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
             blacklisted = await self.bot.postgres.fetch("SELECT * FROM blacklist")
             if not blacklisted:
-                blacklistsmbed.title += "Nobody is in Blacklist"
+                blacklistsmbed.title = "Nobody is in Blacklist"
             else:
                 blacklistsmbed.title = "Users in Blacklist"
                 for users in blacklisted:

@@ -158,7 +158,6 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             return await ctx.reply(embed=noteeditmbed)
         await self.bot.postgres.execute("UPDATE notes SET task=$1, jump_url=$2 WHERE user_id=$3 AND task=$4", task, ctx.message.jump_url, ctx.author.id, tasks[number])
         noteeditmbed.title = "Edited:"
-        noteeditmbed.description = F"**Before:** {tasks[number]}\n**After:** {task}"
         noteeditmbed.add_field(name="Before:", value=tasks[number], inline=False)
         noteeditmbed.add_field(name="After:", value=task, inline=False)
         await ctx.reply(embed=noteeditmbed)

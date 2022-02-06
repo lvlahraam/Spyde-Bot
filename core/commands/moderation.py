@@ -34,6 +34,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
     @commands.bot_has_guild_permissions(ban_members=True)
     async def unban(self, ctx:commands.Context, user:discord.User=commands.Option(description="The user you want to unban"), *, reason:str=commands.Option(description="The reason for unbanning the user", default=None)):
         reason = reason or "Unspecified"
+        await ctx.guild.unban(user, reason)
         unmbed = discord.Embed(
             color=self.bot.color,
             title="Unbanned:",
@@ -43,7 +44,6 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         unmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
         unmbed.add_field(name="Reason:", value=reason, inline=False)
         unmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        await ctx.guild.unban(user, reason)
         await ctx.reply(embed=unmbed)
 
     # Kick
@@ -89,24 +89,24 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
                 if member.timeout_until:
                     tombed.title = "UnTimed-out"
                     await member.edit(timeout_until=None, reason=reason)
-                    return await ctx.reply(embed=tombed)
-                tombed.title = "UnTimed-out Failed"
-                tombed.description = "The member is not timed-out"
-                return await ctx.reply(embed=tombed)
-            times = {
-                "1minutes": 1,
-                "5minutes": 5,
-                "15minutes": 15,
-                "30minutes": 30,
-                "1hour": 60,
-                "6hour": 360,
-                "12hour": 720,
-                "1day": 1440,
-                "1week": 10080
-            }
-            until = times[option] * 60 * 1000
-            tombed.title = "Timed-out"
-            await member.edit(timeout_until=until, reason=reason)
+                else:
+                    tombed.title = "UnTimed-out Failed"
+                    tombed.description = "The member is not timed-out"
+            else:
+                times = {
+                    "1minutes": 1,
+                    "5minutes": 5,
+                    "15minutes": 15,
+                    "30minutes": 30,
+                    "1hour": 60,
+                    "6hour": 360,
+                    "12hour": 720,
+                    "1day": 1440,
+                    "1week": 10080
+                }
+                until = times[option] * 60 * 1000
+                tombed.title = "Timed-out"
+                await member.edit(timeout_until=until, reason=reason)
         else:
             tombed.title = "You can't (un)timeout this user!"
         await ctx.reply(embed=tombed)
@@ -119,15 +119,6 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
     async def slowmode(self, ctx:commands.Context, times:typing.Literal["0seconds", "5seconds", "10seconds", "15seconds", "30seconds", "1minutes", "2minutes", "5minutes", "10minutes", "15minutes", "30minutes", "1hour", "2hour", "6hour"]=commands.Option(description="The seconds for slowmode"), channel:typing.Union[discord.TextChannel, discord.Thread]=commands.Option(description="The channel you want to change the slowmode of", default=None), *, reason:str=commands.Option(description="The reason for changing the slowmode", default=None)):
         channel = channel or ctx.channel
         reason = reason or "Unspecified"
-        smmbed = discord.Embed(
-            color=self.bot.color,
-            title="Slowdown:",
-            timestamp=ctx.message.created_at
-        )
-        smmbed.add_field(name="Channel:", value=channel.mention, inline=False)
-        smmbed.add_field(name="Slowmode:", value=times, inline=False)
-        smmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
-        smmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         seconds = {
             "0seconds": 0,
             "5seconds": 5,
@@ -144,6 +135,15 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             "2hour": 7200,
             "6hour": 21600
         }
+        smmbed = discord.Embed(
+            color=self.bot.color,
+            title="Slowdown:",
+            timestamp=ctx.message.created_at
+        )
+        smmbed.add_field(name="Channel:", value=channel.mention, inline=False)
+        smmbed.add_field(name="Slowmode:", value=times, inline=False)
+        smmbed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
+        smmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await channel.edit(reason=reason, slowmode_delay=seconds[times])
         await ctx.reply(embed=smmbed)
 

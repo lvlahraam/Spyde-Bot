@@ -9,65 +9,42 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     # Prefix
     @commands.group(name="prefix", aliases=["pf"], help="Setting up the prefix with these, Consider using subcommands", invoke_without_command=True)
     @commands.guild_only()
-    async def prefix(self, ctx:commands.Context):
-        await ctx.send_help("prefix")
-
-    # Prefix-Status
-    @prefix.command(name="status", aliases=["st"], help="Shows the status for prefix")
-    @commands.guild_only()
-    async def prefix_status(self, ctx:commands.Context):
-        pfstmbed = discord.Embed(
-            color=self.bot.color,
-            title=F"My Prefix here is:",
-            description=self.bot.prefixes.get(ctx.guild.id),
-            timestamp=ctx.message.created_at
-        )
-        pfstmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        await ctx.reply(embed=pfstmbed)
-
-    # Prefix-Change
-    @prefix.command(name="change", aliases=["ch"], help="Changes the prefix to the new given text")
-    @commands.guild_only()
-    @commands.has_guild_permissions(administrator=True)
-    async def prefix_change(self, ctx:commands.Context, *, text:str=commands.Option(description="The new prefix you want to be set")):
-        prefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
-        pfchmbed = discord.Embed(
+    async def prefix(self, ctx:commands.Context, options:typing.Literal["set", "reset", "show"]=commands.Option(description="The option you want to use"), *, prefix:str=commands.Option(description="The prefix you want to be set", default=None)):
+        pfmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        pfchmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if text == prefix:
-            pfchmbed.title = "Prefix is the same"
-            pfchmbed.description = prefix
-            return await ctx.reply(embed=pfchmbed)
-        if not prefix:
-            await self.bot.postgres.execute("INSERT INTO prefixes(guild_name,guild_id,prefix) VALUES($1,$2,$3)", ctx.guild.name, ctx.guild.id, text)
-        else:
-            await self.bot.postgres.fetch("UPDATE prefixes SET prefix=$1 WHERE guild_id=$2", text, ctx.guild.id)
-        self.bot.prefixes[ctx.guild.id] = text
-        pfchmbed.title = "Changed prefix:"
-        pfchmbed.description = text
-        await ctx.reply(embed=pfchmbed)
-
-    # Prefix-Reset
-    @prefix.command(name="reset", aliases=["rs"], help="Resets the prefix")
-    @commands.guild_only()
-    @commands.has_guild_permissions(administrator=True)
-    async def prefix_reset(self, ctx:commands.Context):
-        prefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
-        pfrsmbed = discord.Embed(
-            color=self.bot.color,
-            timestamp=ctx.message.created_at
-        )
-        pfrsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if prefix:
-            await self.bot.postgres.execute("DELETE FROM prefixes WHERE guild_id=$1", ctx.guild.id)
-            pfrsmbed.title = "Resetted to:"
-            pfrsmbed.description = self.bot.prefixes[ctx.guild.id] = self.bot.default_prefix
-            return await ctx.reply(embed=pfrsmbed)
-        pfrsmbed.title = "Prefix was never changed"
-        pfrsmbed.description = self.bot.prefixes[ctx.guild.id]
-        await ctx.reply(embed=pfrsmbed)
+        pfmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if options == "set":
+            if not prefix:
+                raise commands.MissingRequiredArgument(param=prefix)
+            else:
+                pfmbed.description = prefix
+                dataprefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+                if dataprefix == prefix:
+                    pfmbed.title = "Prefix is the same"
+                    return await ctx.reply(embed=pfmbed)
+                else:
+                    if not prefix:
+                        await self.bot.postgres.execute("INSERT INTO prefixes(guild_name,guild_id,prefix) VALUES($1,$2,$3)", ctx.guild.name, ctx.guild.id, prefix)
+                    else:
+                        await self.bot.postgres.fetch("UPDATE prefixes SET prefix=$1 WHERE guild_id=$2", prefix, ctx.guild.id)
+                    self.bot.prefixes[ctx.guild.id] = prefix
+                    pfmbed.title = "Changed prefix:"
+        elif options == "reset":
+            pfmbed.description = self.bot.default_prefix
+            dataprefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+            if dataprefix:
+                await self.bot.postgres.execute("DELETE FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+                pfmbed.title = "Resetted to:"
+                self.bot.prefixes[ctx.guild.id] = self.bot.default_prefix
+            else:
+                pfmbed.title = "Prefix was never changed"
+                self.bot.prefixes[ctx.guild.id]
+        elif options == "show":
+            pfmbed.title = F"My Prefix here is:"
+            pfmbed.description = self.bot.prefixes.get(ctx.guild.id)
+        await ctx.reply(embed=pfmbed)
 
     # Welcome
     @commands.group(name="welcome", aliases=["wel"], help="Setting up the welcomer with these, Consider using subcommands", invoke_without_command=True)
@@ -236,7 +213,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     @commands.guild_only()
     @commands.has_guild_permissions(administrator=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
-    async def ticket(self, ctx:commands.Context, option:typing.Literal["On", "Off", "Status", "View"]):
+    async def ticket(self, ctx:commands.Context, option:typing.Literal["on", "off", "status", "view"]):
         tkmbed = discord.Embed(
             color=self.bot.color,
             title="📮 Ticketer",

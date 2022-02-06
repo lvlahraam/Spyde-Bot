@@ -177,7 +177,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
     async def rockpaperscissors(self, ctx:commands.Context):
         rpsmbed = discord.Embed(
             color=self.bot.color,
-            description="Choose your **tool** with the buttons:",
+            description="Choose your tool with the buttons:",
             timestamp=ctx.message.created_at
         )
         rpsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
@@ -189,7 +189,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
     async def coinflip(self, ctx:commands.Context):
         cfmbed = discord.Embed(
             color=self.bot.color,
-            description="**Head** or **Tails**, choose wisely",
+            description="Choose what you think the side is with the buttons:",
             timestamp=ctx.message.created_at
         )
         cfmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
@@ -201,7 +201,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
     async def guess(self, ctx:commands.Context):
         gsmbed = discord.Embed(
             color=self.bot.color,
-            description="Try to **guess** the number now",
+            description="Try to guess the number now",
             timestamp=ctx.message.created_at
         )
         gsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)

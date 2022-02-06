@@ -254,30 +254,30 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
     @commands.command(name="emojis", aliases=["es"], help="Shows every emoji with or without the given name")
     @commands.guild_only()
     async def emojis(self, ctx:commands.Context, *, name:str=commands.Option(description="The name you want to be searched for", default=None)):
-        ps = []
+        esemojis = []
         for guild in self.bot.guilds:
             for emoji in guild.emojis:
                 if name:
-                    if name in emoji.name.lower(): ps.append(emoji)
-                else: ps.append(emoji)
-        if not ps: return await ctx.reply(F"Couldn't find any emoji with {name}")
-        es = []
-        for p in ps:
-            e = discord.Embed(
+                    if name in emoji.name.lower(): esemojis.append(emoji)
+                else: esemojis.append(emoji)
+        if not esemojis: return await ctx.reply(F"Couldn't find any emoji with {name}")
+        esembeds = []
+        for p in esemojis:
+            esmbed = discord.Embed(
                 color=discord.Color.blurple(),
                 timestamp=ctx.message.created_at
             )
-            e.add_field(name="Name:", value=p.name, inline=False)
-            e.add_field(name="ID:", value=p.id, inline=False)
-            e.add_field(name="Animated:", value=p.animated, inline=False)
-            e.add_field(name="Requires Colons:", value=p.require_colons, inline=False)
-            e.add_field(name="Available", value=p.available, inline=False)
-            e.add_field(name="Twitch", value=p.managed, inline=False)
-            e.add_field(name="Created At", value=F"{discord.utils.format_dt(p.created_at, style='f')} ({discord.utils.format_dt(p.created_at, style='R')})", inline=False)
-            e.set_thumbnail(url=p.url)
-            e.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-            es.append(e)
-        await pagination.ViewPagination(ctx, es).start() if len(es) > 1 else await ctx.reply(embed=es[0])
+            esmbed.add_field(name="Name:", value=p.name, inline=False)
+            esmbed.add_field(name="ID:", value=p.id, inline=False)
+            esmbed.add_field(name="Animated:", value=p.animated, inline=False)
+            esmbed.add_field(name="Requires Colons:", value=p.require_colons, inline=False)
+            esmbed.add_field(name="Available", value=p.available, inline=False)
+            esmbed.add_field(name="Twitch", value=p.managed, inline=False)
+            esmbed.add_field(name="Created At", value=F"{discord.utils.format_dt(p.created_at, style='f')} ({discord.utils.format_dt(p.created_at, style='R')})", inline=False)
+            esmbed.set_thumbnail(url=p.url)
+            esmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+            esembeds.append(esmbed)
+        await pagination.ViewPagination(ctx, esembeds).start() if len(esembeds) > 1 else await ctx.reply(embed=esembeds[0])
 
     # EmojiInfo
     @commands.command(name="emojiinfo", aliases=["ei"], help="Gives information about the given emoji")
