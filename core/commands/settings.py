@@ -17,15 +17,14 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         pfmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if options == "set":
             if not prefix:
-                raise commands.MissingRequiredArgument(param=prefix)
+                pfmbed.title = "You need to pass a string for prefix"
             else:
                 pfmbed.description = prefix
-                dataprefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
-                if dataprefix == prefix:
+                if prefix == self.bot.prefixes[ctx.guild.id]:
                     pfmbed.title = "Prefix is the same"
-                    return await ctx.reply(embed=pfmbed)
                 else:
-                    if not prefix:
+                    data = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+                    if not data:
                         await self.bot.postgres.execute("INSERT INTO prefixes(guild_name,guild_id,prefix) VALUES($1,$2,$3)", ctx.guild.name, ctx.guild.id, prefix)
                     else:
                         await self.bot.postgres.fetch("UPDATE prefixes SET prefix=$1 WHERE guild_id=$2", prefix, ctx.guild.id)
@@ -33,8 +32,8 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                     pfmbed.title = "Changed prefix:"
         elif options == "reset":
             pfmbed.description = self.bot.default_prefix
-            dataprefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
-            if dataprefix:
+            data = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+            if data:
                 await self.bot.postgres.execute("DELETE FROM prefixes WHERE guild_id=$1", ctx.guild.id)
                 pfmbed.title = "Resetted to:"
                 self.bot.prefixes[ctx.guild.id] = self.bot.default_prefix
