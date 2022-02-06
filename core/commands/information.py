@@ -87,8 +87,10 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         brmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if fetch.banner:
+            brmbed.title = F"{user.name}'s Banner"
             brmbed.set_image(url=fetch.banner.url)
-        else: brmbed.title = F"{user.name} doesn't have banner"
+        else:
+            brmbed.title = F"{user.name} doesn't have banner"
         await ctx.reply(embed=brmbed)
 
     # UserInfo
