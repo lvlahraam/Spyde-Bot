@@ -154,7 +154,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
 
     def bar(self, position, length, size=10):
         done = int((position/length)*size)
-        return F"{'🌕'*done}{'🌑'*(size-done)}"
+        return F"{'🟣'*done}{'⚫'*(size-done)}"
 
     def bot_voice(ctx:commands.Context):
         if ctx.voice_client:
@@ -585,9 +585,8 @@ class Music(commands.Cog, description="Jamming out with these!"):
         view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
         await track.ctx.reply(embed=tsmbed, view=view)
         while player.is_playing or player.is_paused:
-            if track.ctx.me.voice:
-                if not track.ctx.me.voice.channel.members > 1:
-                    await player.destroy()
+            if track.ctx.me.voice.channel.members < 1:
+                await player.destroy()
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player:pomice.Player, track:pomice.Track, reason:str):
