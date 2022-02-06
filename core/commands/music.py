@@ -497,7 +497,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 sembed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
                 sembed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
                 sembed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
-                sembed.add_field(name="Duration", value=F"{self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
+                sembed.add_field(name="Duration", value=F"{self.bar(mtime, ctx.voice_client.current.length)} | {self.duration(mtime)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
                 sembed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
                 view = discord.ui.View()
                 view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
@@ -586,7 +586,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         await track.ctx.reply(embed=tsmbed, view=view)
         while player.is_playing or player.is_paused:
             if track.ctx.me.voice:
-                if track.ctx.me.voice.channel.members > 1:
+                if not track.ctx.me.voice.channel.members > 1:
                     await player.destroy()
 
     @commands.Cog.listener()
