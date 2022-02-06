@@ -490,7 +490,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
             if hours is None and minutes is None and seconds is None:
                 sembed.description = "You must pass a valid time, e.g. `1h 2m 30s`"
                 return await ctx.reply(embed=sembed)
-            dtime = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+            dtime = datetime.timedelta(hours=int(hours), minutes=int(minutes), seconds=int(seconds))
             mtime = dtime.seconds*1000
             print(dtime, mtime)
             if not (mtime) >= ctx.voice_client.current.length:
