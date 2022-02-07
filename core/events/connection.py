@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+from core.views import ticket
 class OnConnect(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -17,6 +17,10 @@ class OnReady(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(F"Readied as: {self.bot.user} - {self.bot.user.id}\nReady in discord.")
+        if not self.bot.persistent_views_added:
+            self.bot.add_view(ticket.TicketView(self.bot))
+            self.bot.add_view(ticket.CloseTicketView(self.bot, None, None))
+            self.bot.persistent_views_added = True
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.watching, name=F"over Sym {len(self.bot.guilds)} | {self.bot.default_prefix}help"))
 
 class OnDisconnect(commands.Cog):

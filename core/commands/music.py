@@ -365,7 +365,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
     async def loop(self, ctx:commands.Context):
         lpmbed = discord.Embed(
             color=self.bot.color,
-            title="Pause",
+            title="Pause:",
             timestamp=ctx.message.created_at
         )
         lpmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
@@ -584,9 +584,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
         view = discord.ui.View()
         view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
         await track.ctx.reply(embed=tsmbed, view=view)
-        while player.is_playing or player.is_paused:
-            if track.ctx.me.voice.channel.members < 1:
-                await player.destroy()
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player:pomice.Player, track:pomice.Track, reason:str):

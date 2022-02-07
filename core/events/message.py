@@ -11,7 +11,8 @@ class OnMessage(commands.Cog):
         if message.content in (F"<@{self.bot.user.id}>", F"<@!{self.bot.user.id}>"):
             pfmbed = discord.Embed(
                 color=self.bot.color,
-                title=F"My Prefix here is: .ez",
+                title="My Prefix here is:",
+                description=self.bot.prefixes.get(message.guild.id),
                 timestamp=message.created_at
             )
             pfmbed.set_footer(text=message.author, icon_url=message.author.display_avatar.url)

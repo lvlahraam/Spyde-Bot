@@ -225,7 +225,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             description=F"Use the button to open a ticket",
         )
         num = await self.bot.postgres.fetchval("SELECT num FROM tickets WHERE guild_id = $1", ctx.guild.id)
-        if option == "On":
+        if option == "on":
             if num:
                 tkmbed.title += " is already turned on"
                 return await ctx.reply(embed=tkmbed)
@@ -237,7 +237,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             tkmbed.description = F"Tickets are now created in {cag.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command `.ticket Off` to turn off the ticketer\nYou can see the status of the ticketer with `.ticket Status`"
             await ch.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
             return await ctx.reply(embed=tkmbed)
-        elif option == "Off":
+        elif option == "off":
             if not num:
                 tkmbed.title += " is already turned off"
                 return await ctx.reply(embed=tkmbed)
@@ -245,7 +245,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             tkmbed.title += " has been turned off"
             tkmbed.description = "You can Delete the categor(y/ies) and channel(s)"
             return await ctx.reply(embed=tkmbed)
-        elif option == "Status":
+        elif option == "status":
             if not num:
                 tkmbed.title += " is turned off"
                 return await ctx.reply(embed=tkmbed)
@@ -254,12 +254,12 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             tkmbed.title += " is turned on"
             tkmbed.description = F"Tickets are now created in the {category.mention} cateogry"
             return await ctx.reply(embed=tkmbed)
-        elif option == "View":
+        elif option == "view":
             if not num:
                 tkmbed.title += " is turned off"
                 return await ctx.reply(embed=tkmbed)
             tkmbed.title += " message has been sent"
-            await ctx.reply(embed=tkviewmbed, view=ticket.TicketView(self.bot))
+            await ctx.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
             return await ctx.reply(embed=tkmbed)
 
     # Leave
