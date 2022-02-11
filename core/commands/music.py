@@ -3,8 +3,6 @@ import discord, pomice, re, asyncio, datetime
 from discord.ext import commands
 from core.views import confirm, pagination
 
-URL_REG = re.compile(r"https?://(?:www\.)?.+")
-
 class ViewPlayer(discord.ui.View):
     def __init__(self, ctx, music):
         super().__init__(timeout=None)
@@ -231,7 +229,8 @@ class Music(commands.Cog, description="Jamming out with these!"):
     async def disconnect(self, ctx:commands.Context):
         dcmbed = discord.Embed(
             color=self.bot.color,
-            title="Disconnected from the voice channel",
+            title="Disconnect:",
+            description=ctx.me.voice.channel.mention,
             timestamp=ctx.message.created_at
         )
         dcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
