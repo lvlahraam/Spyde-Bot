@@ -47,7 +47,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
 
     # Notes
     @commands.command(name="notes", aliases=["nt"], help="Taking notes with this")
-    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option("The options you want to use", default=None), *, value:typing.Union[str, int]=commands.Option("The value you want to use", default=None)):
+    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use", default=None), *, value:typing.Union[str, int]=commands.Option(description="The value you want to use", default=None)):
         ntmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
