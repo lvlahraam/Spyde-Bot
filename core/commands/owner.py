@@ -173,8 +173,9 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
     @commands.command(name="screenshot", aliases=["ss"], help="Gives a preview from the given website")
     @commands.is_owner()
     @commands.bot_has_guild_permissions(attach_files=True)
-    async def screenshot(self, ctx:commands.Context, *, website:str=commands.Option(description="The website you want to take a screenshot from")):
-        session = await self.bot.session.get(F"https://api.screenshotmachine.com?key=a95edd&url={website}&dimension=1024x768")
+    async def screenshot(self, ctx:commands.Context, *, website:str=commands.Option(description="The website you want to take a screenshot from"), delay:int=commands.Option(description="The delay in seconds", default=None)):
+        delay = delay or 0
+        session = await self.bot.session.get(F"https://api.screenshotmachine.com?key=a95edd&url={website}&dimension=1366xfull&delay={delay}")
         response = io.BytesIO(await session.read())
         ssmbed = discord.Embed(
             color=self.bot.color,

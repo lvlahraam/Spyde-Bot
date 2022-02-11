@@ -11,7 +11,7 @@ class OnGuild(commands.Cog):
         ogjmbed = discord.Embed(
             title="Thanks for inviting me!",
             description=F"\nHey there! Thanks for inviting me!\nIf you need any help, just type **{self.bot.default_prefix}help**",
-            timestamp=discord.utils.utcnow()
+
         )
         await channel.send(embed=ogjmbed)
 

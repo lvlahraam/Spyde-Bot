@@ -100,7 +100,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         member = member or ctx.author
         fetch = await self.bot.fetch_user(member.id)
         gi = [
-            F"***Username:*** {member.name}",
+            F"***Username:*** {member}",
             F"***Discriminator:*** {member.discriminator}",
             F"***ID:*** {member.id}",
             F"***Mention:*** {member.mention}",
