@@ -14,6 +14,7 @@ class HelpSelect(discord.ui.Select):
             await interaction.response.edit_message(embed=self.homepage)
         if self.values[0] == "deletemessage":
             await interaction.message.delete()
+            await interaction.response.send_message("Deleted the message...")
         else:
             for cog, commands in self.mapping.items():
                 if cog:
