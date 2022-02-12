@@ -252,7 +252,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
             await ctx.invoke(self.join)
         if ctx.me.voice.channel == ctx.author.voice.channel:
             results = await ctx.voice_client.get_tracks(query=query, ctx=ctx)
-            print(results)
             if not results:
                 plmbed.description = "No results were found for that query."
                 return await ctx.reply(embed=plmbed)
@@ -491,7 +490,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 return await ctx.reply(embed=sembed)
             dtime = datetime.timedelta(hours=0 if not hours else int(hours), minutes=0 if not minutes else int(minutes), seconds=0 if not seconds else int(seconds))
             mtime = dtime.seconds*1000
-            print(dtime, mtime)
             if not (mtime) >= ctx.voice_client.current.length:
                 sembed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
                 sembed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)

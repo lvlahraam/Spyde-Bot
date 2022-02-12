@@ -1,5 +1,4 @@
-import discord, logging, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random, json
-from core.views import confirm, pagination
+import discord, logging, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random
 from core.views import help
 from discord.ext import commands
 
@@ -95,7 +94,7 @@ bot = SymBase(
     strip_after_prefix=True,
     case_insensitive=True,
     help_command=help.CustomHelp(),
-    intents=discord.Intents.all(),
+    intents=discord.Intents(administrator=True),
     allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False, replied_user=True)
 )
 
