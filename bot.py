@@ -94,7 +94,7 @@ bot = SymBase(
     strip_after_prefix=True,
     case_insensitive=True,
     help_command=help.CustomHelp(),
-    intents=discord.Intents(administrator=True),
+    intents=discord.Intents.all(),
     allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False, replied_user=True)
 )
 
