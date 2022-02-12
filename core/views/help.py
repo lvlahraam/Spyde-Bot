@@ -1,7 +1,7 @@
 import discord, contextlib
 from discord.ext import commands
 
-class ButtonUI(discord.ui.Button):
+class HelpSelect(discord.ui.Select):
     def __init__(self, view, **kwargs):
         super().__init__(**kwargs)
         self.help = view.help
@@ -10,27 +10,25 @@ class ButtonUI(discord.ui.Button):
     def gts(self, command):
         return F"• **{command.qualified_name}** {command.signature} - {command.help or 'No help found...'}\n"
     async def callback(self, interaction:discord.Interaction):
-        if self.custom_id == "home":
+        if self.values[0] == "homepage":
             await interaction.response.edit_message(embed=self.homepage)
-        elif self.custom_id == "delete":
+        if self.values[0] == "deletemessage":
             await interaction.message.delete()
         else:
             for cog, commands in self.mapping.items():
-                name = cog.qualified_name if cog else "Alone"
-                description = cog.description if cog else "Commands without category"
-                cmds = cog.walk_commands() if cog else commands
-                if self.custom_id == name:
-                    mbed = discord.Embed(
-                        color=self.help.context.bot.color,
-                        title=F"{self.help.emojis.get(name) if self.help.emojis.get(name) else '❓'} {name} Category",
-                        description=F"{description}\n\n{''.join(self.gts(command) for command in cmds)}",
-                        timestamp=self.help.context.message.created_at
-                    )
-                    mbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
-                    mbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-                    mbed.set_footer(text="<> is required | [] is optional")
-                    await interaction.response.edit_message(embed=mbed)
-class ButtonView(discord.ui.View):
+                if cog:
+                    if self.values[0] == cog.qualified_name:
+                        helpmbed = discord.Embed(
+                            color=self.help.context.bot.color,
+                            title=F"{self.help.emojis.get(cog.qualified_name) or '❓'} {cog.qualified_name}",
+                            description=F"{cog.description}\n\n{''.join(self.gts(command) for command in cog.walk_commands())}",
+                            timestamp=self.help.context.message.created_at
+                        )
+                        helpmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
+                        helpmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
+                        helpmbed.set_footer(text="<> is required | [] is optional")
+                        await interaction.response.edit_message(embed=helpmbed)
+class HelpView(discord.ui.View):
     def __init__(self, help, mapping):
         super().__init__(timeout=None)
         self.help = help
@@ -38,17 +36,30 @@ class ButtonView(discord.ui.View):
         self.homepage = discord.Embed(
             color=self.help.context.bot.color,
             title=F"{self.help.context.me.name}'s Help",
-            description="For more help or information use and click on the buttons.",
+            description="For more help or information use the menu.",
             timestamp=self.help.context.message.created_at
         )
-        self.add_item(item=ButtonUI(emoji="🏠", label="Home", style=discord.ButtonStyle.green, custom_id="home", view=self))
+        options = [
+            discord.SelectOption(emoji="🏠", label=F"Home Page", description="The home page of this message", value="homepage"),
+            discord.SelectOption(emoji="💣", label=F"Delete Message", description="Deletes this message", value="deletemessage")
+        ]
         for cog, commands in self.mapping.items():
-            if cog and not cog.qualified_name.startswith("On") and cog.qualified_name not in self.help.context.bot._others:
-                self.add_item(item=ButtonUI(emoji=self.help.emojis.get(cog.qualified_name), label=cog.qualified_name, style=discord.ButtonStyle.blurple, custom_id=cog.qualified_name, view=self))
-        self.add_item(item=ButtonUI(emoji="💣", label="Delete", style=discord.ButtonStyle.red, custom_id="delete", view=self))
-
-    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.help.context.author.id: return True
+            if cog and not cog.qualified_name.startswith("On") and not cog.qualified_name in self.help.context.bot._others:
+                option = discord.SelectOption(emoji=self.help.emojis.get(cog.qualified_name) or '❓', label=F"{cog.qualified_name} Category", description=cog.description, value=cog.qualified_name)
+                options.append(option)
+        self.add_item(item=HelpSelect(placeholder="Where do you want to go...", options=options, min_values=1, max_values=1, view=self))
+    async def on_timeout(self):
+        try:
+            for item in self.children:
+                if isinstance(item, discord.ui.Select):
+                    item.placeholder = "Disabled due to being timed out..."
+                item.disabled = True
+            await self.message.edit(view=self)
+        except discord.NotFound:
+            return
+    async def interaction_check(self, interaction:discord.Interaction):
+        if interaction.user.id == self.help.context.author.id:
+            return True
         icheckmbed = discord.Embed(
             color=self.help.context.bot.color,
             title="You can't use this",
@@ -81,7 +92,7 @@ class CustomHelp(commands.HelpCommand):
 
     # Help Main
     async def send_bot_help(self, mapping):
-        view = ButtonView(self, mapping)
+        view = HelpView(self, mapping)
         view.homepage.add_field(name="Prefix:", value=self.context.prefix or "In DM you don't need to use prefix", inline=False)
         view.homepage.add_field(name="Arguments:", value="[] means the argument is optional.\n<> means the argument is required.\n***DO NOT TYPE THESE SYMBOLS WHEN USING A COMMAND***", inline=False)
         view.homepage.set_thumbnail(url=self.context.me.display_avatar.url)

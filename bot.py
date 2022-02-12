@@ -1,6 +1,6 @@
 import discord, logging, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random, json
 from core.views import confirm, pagination
-import core.utils.help as help
+from core.views import help
 from discord.ext import commands
 
 logger = logging.getLogger("discord")
