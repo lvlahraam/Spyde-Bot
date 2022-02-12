@@ -57,7 +57,7 @@ class HelpView(discord.ui.View):
             await self.message.edit(view=self)
         except discord.NotFound:
             return
-    async def interaction_check(self, interaction:discord.Interaction):
+    async def interaction_check(self, item:discord.ui.Item interaction:discord.Interaction):
         if interaction.user.id == self.help.context.author.id:
             return True
         icheckmbed = discord.Embed(
