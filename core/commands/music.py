@@ -394,7 +394,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
             npmbed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
             npmbed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
             npmbed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
-            npmbed.add_field(name="Duration", value=F"{self.bar(ctx.voice_client.current.position, ctx.voice_client.current.length)} | {self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
+            npmbed.add_field(name="Duration", value=F"{self.bar(ctx.voice_client.position, ctx.voice_client.current.length)} | {self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
             if len(ctx.voice_client.lqueue) > 1: npmbed.add_field(name="Next:", value=ctx.voice_client.lqueue[1], inline=False)
             npmbed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
             view = discord.ui.View()
