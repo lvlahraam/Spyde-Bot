@@ -177,7 +177,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             F"***Top-Role:*** {member.top_role.mention}",
             F"***Boosting:*** {'True' if member in ctx.guild.premium_subscribers else 'False'}",
             F"***Nickname:*** {member.nick}",
-            F"***Voice:*** {member.voice.channel.mention if member.voice or member.voice.channel '*Not in a voice*'}"
+            F"***Voice:*** {member.voice.channel.mention if member.voice or member.voice.channel else '*Not in a voice*'}"
         ]
         uimbed = discord.Embed(
             color=fetch.accent_color or self.bot.color,
