@@ -33,7 +33,7 @@ class SuggestModal(discord.ui.Modal):
         await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview, ephemeral=True)
         await confirmview.wait()
         if confirmview.value:
-            await self.ctx.bot.get_channel(898287747205300296).send(embed=sgmodalmbed)
+            await self.ctx.bot.get_channel(942792272938938458).send(embed=sgmodalmbed)
             return await interaction.followup.send(content="Suggestion sent!", ephemeral=True)
         await interaction.followup.send(content="Suggestion cancelled!", ephemeral=True)
 
