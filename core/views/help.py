@@ -7,6 +7,7 @@ class HelpSelect(discord.ui.Select):
         self.help = view.help
         self.mapping = view.mapping
         self.homepage = view.homepage
+        self.cogs = view.cogs
     def gts(self, command):
         return F"• **{command.qualified_name}** {command.signature} - {command.help or 'No help found...'}\n"
     async def callback(self, interaction:discord.Interaction):
@@ -16,19 +17,17 @@ class HelpSelect(discord.ui.Select):
             await interaction.message.delete()
             await interaction.response.send_message(content="Deleted the message...", ephemeral=True)
         else:
-            for cog, commands in self.mapping.items():
-                if cog:
-                    if self.values[0] == cog.qualified_name:
-                        helpmbed = discord.Embed(
-                            color=self.help.context.bot.color,
-                            title=F"{self.help.emojis.get(cog.qualified_name) or '❓'} {cog.qualified_name}",
-                            description=F"{cog.description}\n\n{''.join(self.gts(command) for command in cog.walk_commands())}",
-                            timestamp=self.help.context.message.created_at
-                        )
-                        helpmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
-                        helpmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-                        helpmbed.set_footer(text="<> is required | [] is optional")
-                        await interaction.response.edit_message(embed=helpmbed)
+            cog = self.cogs.get(self.values[0])
+            helpmbed = discord.Embed(
+                color=self.help.context.bot.color,
+                title=F"{self.help.emojis.get(cog.qualified_name) or '❓'} {cog.qualified_name}",
+                description=F"{cog.description}\n\n{''.join(self.gts(command) for command in cog.walk_commands())}",
+                timestamp=self.help.context.message.created_at
+            )
+            helpmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
+            helpmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
+            helpmbed.set_footer(text="<> is required | [] is optional")
+            await interaction.response.edit_message(embed=helpmbed)
 class HelpView(discord.ui.View):
     def __init__(self, help, mapping):
         super().__init__(timeout=None)
@@ -40,12 +39,14 @@ class HelpView(discord.ui.View):
             description="For more help or information use the menu.",
             timestamp=self.help.context.message.created_at
         )
+        self.cogs = {}
         options = [
             discord.SelectOption(emoji="🏠", label=F"Home Page", description="The home page of this message", value="homepage"),
             discord.SelectOption(emoji="💣", label=F"Delete Message", description="Deletes this message", value="deletemessage")
         ]
         for cog, commands in self.mapping.items():
             if cog and not cog.qualified_name.startswith("On") and not cog.qualified_name in self.help.context.bot._others:
+                self.cogs[cog.qualified_name] = cog
                 option = discord.SelectOption(emoji=self.help.emojis.get(cog.qualified_name) or '❓', label=F"{cog.qualified_name} Category", description=cog.description, value=cog.qualified_name)
                 options.append(option)
         self.add_item(item=HelpSelect(placeholder="Where do you want to go...", options=options, min_values=1, max_values=1, view=self))
