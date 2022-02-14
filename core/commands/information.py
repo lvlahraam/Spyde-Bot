@@ -164,7 +164,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             F"***Discriminator:*** {member.discriminator}",
             F"***ID:*** {member.id}",
             F"***Mention:*** {member.mention}",
-            F"***Activity:*** {member.activity.name or '*Nothing*'}",
+            F"***Activity:*** {member.activity.name if member.activity else '*Nothing*'}",
             F"***Status:*** {member.status}",
             F"***Web-Status:*** {member.web_status}",
             F"***Desktop-Status:*** {member.desktop_status}",
@@ -177,7 +177,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             F"***Top-Role:*** {member.top_role.mention}",
             F"***Boosting:*** {'True' if member in ctx.guild.premium_subscribers else 'False'}",
             F"***Nickname:*** {member.nick}",
-            F"***Voice:*** {member.voice.channel.mention or '*Not in a voice*'}"
+            F"***Voice:*** {member.voice.channel.mention if member.voice or member.voice.channel else '*Not in a voice*'}"
         ]
         uimbed = discord.Embed(
             color=fetch.accent_color or self.bot.color,
