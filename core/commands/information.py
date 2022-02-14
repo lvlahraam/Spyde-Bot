@@ -6,15 +6,16 @@ class SuggestModal(discord.ui.Modal):
     def __init__(self, view):
         super().__init__("Try suggesting something!")
         self.ctx = view.ctx
-        self.add_item(discord.ui.TextInput(
-            label="What are you suggesting?",
-            placeholder="The title for your suggestion"
+        self.add_item(
+            discord.ui.TextInput(
+                label="What are you suggesting?",
+                placeholder="The title for your suggestion"
             )
         )
         self.add_item(
             discord.ui.TextInput(
                 label="Why are you suggesting this?",
-                description="Explain more about your suggestion",
+                placeholder="Explain more about your suggestion",
                 style=discord.TextInputStyle.long
             )
         )
