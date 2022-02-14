@@ -49,15 +49,15 @@ class SuggestView(discord.ui.View):
         await interaction.response.send_modal(modal)
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.help.context.author.id:
+        if interaction.user.id == self.ctx.author.id:
             return True
         icheckmbed = discord.Embed(
-            color=self.help.context.bot.color,
+            color=self.ctx.bot.color,
             title="You can't use this",
-            description=F"{interaction.user.mention} - Only {self.help.context.author.mention} can use that\nCause they did the command\nIf you wanted to use the command, do what they did",
-            timestamp=self.help.context.message.created_at
+            description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use that\nCause they did the command\nIf you wanted to use the command, do what they did",
+            timestamp=self.ctx.message.created_at
         )
-        icheckmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
+        icheckmbed.set_thumbnail(url=self.ctx.me.display_avatar.url)
         icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
         await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
         return False
@@ -90,7 +90,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         sgmbed = discord.Embed(
             color=self.bot.color,
             title="Suggest something to the bot",
-            description="For suggesting use the button",
+            description="For suggesting something use the button",
             timestamp=ctx.message.created_at
         )
         sgmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
