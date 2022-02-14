@@ -1,6 +1,66 @@
 import discord, sys, time, io, typing
 from discord.ext import commands
-from core.views import pagination
+from core.views import confirm, pagination
+
+class SuggestModal(discord.ui.Modal):
+    def __init__(self, view):
+        super().__init__("Try suggesting something!")
+        self.ctx = view.ctx
+        self.add_item(discord.ui.TextInput(
+            label="What are you suggesting?",
+            placeholder="The title for your suggestion"
+            )
+        )
+        self.add_item(
+            discord.ui.TextInput(
+                label="Why are you suggesting this?",
+                description="Explain more about your suggestion",
+                style=discord.TextInputStyle.long
+            )
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        sgmodalmbed = discord.Embed(
+            color=self.ctx.bot.color,
+            title=F"Suggestion from {interaction.user}",
+            timestamp=interaction.message.created_at
+        )
+        sgmodalmbed.add_field(name="Title:", value=self.children[0].value)
+        sgmodalmbed.add_field(name="Reason:", value=self.children[1].value)
+        sgmodalmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
+        confirmview = confirm.ViewConfirm(self.ctx)
+        message = await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview)
+        if confirmview.value:
+            await message.delete()
+            await self.ctx.bot.get_channel(898287747205300296).send(embed=sgmodalmbed)
+            return await interaction.response.send_message(content="Suggestion sent!", ephemeral=True)
+        await message.delete()
+        await interaction.response.send_message(content="Suggestion cancelled!", ephemeral=True)
+
+
+class SuggestView(discord.ui.View):
+    def __init__(self, ctx):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+
+    @discord.ui.button(label="Suggest", style=discord.ButtonStyle.blurple)
+    async def open_modal(self, button: discord.Button, interaction: discord.Interaction):
+        modal = SuggestModal(self)
+        await interaction.response.send_modal(modal)
+
+    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
+        if interaction.user.id == self.help.context.author.id:
+            return True
+        icheckmbed = discord.Embed(
+            color=self.help.context.bot.color,
+            title="You can't use this",
+            description=F"{interaction.user.mention} - Only {self.help.context.author.mention} can use that\nCause they did the command\nIf you wanted to use the command, do what they did",
+            timestamp=self.help.context.message.created_at
+        )
+        icheckmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
+        icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
+        await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
+        return False
 
 class Information(commands.Cog, description="Stalking people is wrong and bad!"):
     def __init__(self, bot):
@@ -24,6 +84,19 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         abmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.reply(embed=abmbed)
 
+    # Suggest
+    @commands.command(name="suggest", aliases=["sg"], help="Suggest something to the bot")
+    async def suggest(self, ctx:commands.Context):
+        sgmbed = discord.Embed(
+            color=self.bot.color,
+            title="Suggest something to the bot",
+            description="For suggesting use the button",
+            timestamp=ctx.message.created_at
+        )
+        sgmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        view = SuggestView(ctx)
+        await ctx.send(embed=sgmbed, view=view)
+
     # Invite
     @commands.command(name="invite", aliases=["inv"], help="Gives an invite link for the bot")
     async def invite(self, ctx:commands.Context):
@@ -34,7 +107,8 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         invmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         invite = discord.utils.oauth_url(self.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'application.commands'])
-        view = discord.ui.View().add_item(item=discord.ui.Button(emoji="🔗", label="Invite URL", url=invite))
+        view = discord.ui.View()
+        view.add_item(item=discord.ui.Button(emoji="🔗", label="Invite URL", url=invite))
         await ctx.reply(embed=invmbed, view=view)
 
     # Ping
