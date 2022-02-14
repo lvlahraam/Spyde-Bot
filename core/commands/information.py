@@ -30,13 +30,12 @@ class SuggestModal(discord.ui.Modal):
         sgmodalmbed.add_field(name="Reason:", value=self.children[1].value)
         sgmodalmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
         confirmview = confirm.ViewConfirm(self.ctx)
-        message = await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview)
+        await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview)
         if confirmview.value:
-            await message.delete()
             await self.ctx.bot.get_channel(898287747205300296).send(embed=sgmodalmbed)
             return await interaction.response.send_message(content="Suggestion sent!", ephemeral=True)
-        await message.delete()
-        await interaction.response.send_message(content="Suggestion cancelled!", ephemeral=True)
+        else:
+            await interaction.response.send_message(content="Suggestion cancelled!", ephemeral=True)
 
 
 class SuggestView(discord.ui.View):
