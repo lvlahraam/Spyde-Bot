@@ -48,20 +48,6 @@ class SuggestView(discord.ui.View):
         modal = SuggestModal(self)
         await interaction.response.send_modal(modal)
 
-    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.ctx.author.id:
-            return True
-        icheckmbed = discord.Embed(
-            color=self.ctx.bot.color,
-            title="You can't use this",
-            description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use that\nCause they did the command\nIf you wanted to use the command, do what they did",
-            timestamp=self.ctx.message.created_at
-        )
-        icheckmbed.set_thumbnail(url=self.ctx.me.display_avatar.url)
-        icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-        await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
-        return False
-
 class Information(commands.Cog, description="Stalking people is wrong and bad!"):
     def __init__(self, bot):
         self.bot = bot
