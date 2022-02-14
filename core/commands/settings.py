@@ -91,12 +91,6 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 welmbed.title = "Status for welcome"
                 welmbed.description = F"Turned On\n{msg}\n{ch.mention}"
         await ctx.reply(embed=welmbed)
-
-    # Goodbye
-    @commands.group(name="goodbye", aliases=["bye"], help="Setting up the goodbyer with these, Consider using subcommands", invoke_without_command=True)
-    @commands.guild_only()
-    async def goodbye(self, ctx:commands.Context):
-        await ctx.send_help("goodbye")
     
     # Goodbye
     @commands.command(name="goodbye", aliases=["bye"], help="Setting up the goodbyer with this")
@@ -146,7 +140,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         await ctx.reply(embed=byembed)
 
     # Ticket
-    @commands.command(name="ticket", aliases=["tk"], help="Setting up ticketer based one the given option: On, Off, Status, View")
+    @commands.command(name="ticket", aliases=["tk"], help="Setting up ticketer with this")
     @commands.guild_only()
     @commands.has_guild_permissions(administrator=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
