@@ -31,6 +31,7 @@ class SuggestModal(discord.ui.Modal):
         sgmodalmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
         confirmview = confirm.ViewConfirm(self.ctx)
         await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview)
+        await confirmview.wait()
         if confirmview.value:
             await self.ctx.bot.get_channel(898287747205300296).send(embed=sgmodalmbed)
             return await interaction.followup.send(content="Suggestion sent!", ephemeral=True)
