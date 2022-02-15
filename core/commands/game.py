@@ -151,8 +151,8 @@ class GuessView(discord.ui.View):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.choose = None
-        self.number = random.randint(1, 3)
-        for _ in range(1, 4):
+        self.number = random.randint(0, 4)
+        for _ in range(1, 5):
             self.add_item(item=GuessButtons(label=_, style=discord.ButtonStyle.green, view=self))
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id == self.ctx.message.author.id:

@@ -41,7 +41,7 @@ class HelpView(discord.ui.View):
                 option = discord.SelectOption(emoji=self.help.emojis.get(cog.qualified_name) or '❓', label=F"{cog.qualified_name} Category", description=cog.description, value=cog.qualified_name)
                 options.append(option)
         self.add_item(item=HelpSelect(placeholder="Where do you want to go...", options=options, min_values=1, max_values=1, view=self))
-        self.add_item(item=discord.ui.Button(emoji="🔗", label="Invite", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
+        self.add_item(item=discord.ui.Button(emoji="🔗", label="Invite Bot", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
 
     @discord.ui.button(emoji="🏠", label=F"Home Page", style=discord.ButtonStyle.green, disabled=True)
     async def home(self, button:discord.ui.Button, interaction:discord.Interaction):
@@ -53,27 +53,18 @@ class HelpView(discord.ui.View):
         await interaction.message.delete()
         await interaction.response.send_message(content="Deleted the message...", ephemeral=True)
 
-    async def on_timeout(self):
-        try:
-            for item in self.children:
-                if isinstance(item, discord.ui.Select):
-                    item.placeholder = "Disabled due to being timed out..."
-                item.disabled = True
-            await self.message.edit(view=self)
-        except discord.NotFound:
-            return
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id == self.help.context.author.id:
             return True
-        icheckmbed = discord.Embed(
+        icmbed = discord.Embed(
             color=self.help.context.bot.color,
             title="You can't use this",
             description=F"{interaction.user.mention} - Only {self.help.context.author.mention} can use that\nCause they did the command\nIf you wanted to use the command, do what they did",
             timestamp=self.help.context.message.created_at
         )
-        icheckmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
-        icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-        await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
+        icmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
+        icmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
+        await interaction.response.send_message(embed=icmbed, ephemeral=True)
         return False
 
 class CustomHelp(commands.HelpCommand):

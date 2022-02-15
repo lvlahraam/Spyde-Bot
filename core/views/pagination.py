@@ -32,7 +32,7 @@ class ViewPagination(discord.ui.View):
     async def stop(self, button:discord.ui.Button, interaction:discord.Interaction):
         await interaction.message.delete()
 
-    @discord.ui.button(emoji="⏩", style=discord.ButtonStyle.green, disabled=False)
+    @discord.ui.button(emoji="⏩", style=discord.ButtonStyle.green)
     async def next(self, button:discord.ui.Button, interaction:discord.Interaction):
         self.page += 1
         self.counter.label = F"{self.page+1}/{len(self.pages)}"
@@ -46,7 +46,7 @@ class ViewPagination(discord.ui.View):
             embed = self.pages[self.page]
         await interaction.response.edit_message(embed=embed, view=button.view)
 
-    @discord.ui.button(emoji="⏭️", style=discord.ButtonStyle.blurple, disabled=False)
+    @discord.ui.button(emoji="⏭️", style=discord.ButtonStyle.blurple)
     async def last(self, button:discord.ui.Button, interaction:discord.Interaction):
         self.page = len(self.pages) - 1
         self.counter.label = F"{len(self.pages)}/{len(self.pages)}"
@@ -63,11 +63,6 @@ class ViewPagination(discord.ui.View):
     async def start(self, interaction:discord.Interaction=None):
         self.counter.label = F"1/{len(self.pages)}"
         return await interaction.response.send_message(embed=self.pages[0], view=self, ephemeral=True) if interaction else await self.ctx.reply(embed=self.pages[0], view=self) 
-
-    async def on_timeout(self):
-        if self.children:
-            self.clear_items()
-            await self.message.edit(content="Timed-out", view=self)
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.message.author.id:
