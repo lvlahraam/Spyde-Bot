@@ -1,43 +1,32 @@
 import discord
 
 class ViewVote(discord.ui.View):
-    def __init__(self, ctx, usage, job, message, voters):
+    def __init__(self, ctx, usage, voters):
         super().__init__(timeout=15)
         self.ctx = ctx
         self.usage = usage
-        self.job = job
-        self.message = message
         self.vote = 0
         self.voters = voters
-        self.already = []
+        self.voted = {}
     
-    @discord.ui.button(emoji="👍", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(emoji="➕", style=discord.ButtonStyle.green)
     async def upvote(self, button:discord.ui.Button, interaction:discord.Interaction):
-        if interaction.user.id in self.already:
-            return await interaction.response.send_message(content=F"{interaction.user.mention} you can't vote more than one time", ephemeral=True)
-        self.vote += 1
-        self.counter.label = F"{self.vote}/{self.voters}"
-        self.already.append(interaction.user.id)
-        if self.vote == self.voters:
-            button.disabled = True
-            await interaction.response.edit_message(content=F"Everyone voted for: {self.usage}")
-            await interaction.response.send_message(content=self.message)
-            return await self.job()
-        await interaction.response.send_message(content=F"{interaction.user.mention} has voted for: {self.usage}")
+        if not self.voted.get(interaction.user.id):
+            self.vote += 1
+            self.counter.label = F"{self.vote}/{self.voters}"
+            self.voted[interaction.user.id] = True
+            return await interaction.response.send_message(content=F"{interaction.user.mention} has voted for: {self.usage}", delete_after=2.5)
+        await interaction.response.send_message(content=F"{interaction.user.mention} you can't vote more than one time", ephemeral=True)
 
     @discord.ui.button(style=discord.ButtonStyle.gray, disabled=True)
     async def counter(self, button:discord.ui.Button, interaction:discord.Interaction):
         return
 
-    @discord.ui.button(emoji="👎", style=discord.ButtonStyle.red)
+    @discord.ui.button(emoji="➖", style=discord.ButtonStyle.red)
     async def downvote(self, button:discord.ui.Button, interaction:discord.Interaction):
-        if interaction.user.id in self.already:
+        if self.voted.get(interaction.user.id):
             self.vote -= 1
             self.counter.label = F"{self.vote}/{self.voters}"
-            for _id in self.already:
-                if _id == interaction.user.id:
-                    self.already.remove(_id)
-                    break
             return await interaction.response.send_message(content=F"{interaction.user.mention} has removed his vote for: {self.usage}")
         await interaction.response.send_message(content=F"{interaction.user.mention} you have never voted", ephemeral=True)
 
@@ -45,7 +34,7 @@ class ViewVote(discord.ui.View):
         self.counter.label = F"0/{self.voters}"
         votembed = discord.Embed(
             title="Voting starts",
-            description=F"Vote for {self.usage}\nTimeout is {self.timeout}",
+            description=F"Vote for {self.usage}\nTimeout is {self.timeout}s",
             timestamp=self.ctx.message.created_at,
         )
         votembed.set_footer(text=self.ctx.author, icon_url=self.ctx.author.avatar.url)
@@ -54,8 +43,7 @@ class ViewVote(discord.ui.View):
     async def on_timeout(self):
         for children in self.children:
             children.disabled = True
-        if self.vote == self.voters: return
-        if self.vote != self.voters: return await self.ctx.send(content=F"Voting for {self.usage} has been ended\nVotes didn't reach the needed amount {self.voters}", view=self.view)
+        await self.message.delete()
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if self.ctx.voice_client:
