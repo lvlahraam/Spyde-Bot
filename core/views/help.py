@@ -19,7 +19,6 @@ class HelpSelect(discord.ui.Select):
             description=F"{cog.description}\n\n{''.join(self.gts(command) for command in cog.walk_commands())}",
             timestamp=self.help.context.message.created_at
         )
-        helpmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
         helpmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
         helpmbed.set_footer(text="<> is required | [] is optional")
         await interaction.response.edit_message(embed=helpmbed, view=self.view)
@@ -35,24 +34,21 @@ class HelpView(discord.ui.View):
             timestamp=self.help.context.message.created_at
         )
         self.cogs = {}
-        options = [
-            discord.SelectOption(emoji="🏠", label=F"Home Page", description="The home page of this message", value="homepage"),
-            discord.SelectOption(emoji="💣", label=F"Delete Message", description="Deletes this message", value="deletemessage")
-        ]
+        options = []
         for cog, commands in self.mapping.items():
             if cog and not cog.qualified_name.startswith("On") and not cog.qualified_name in self.help.context.bot._others:
                 self.cogs[cog.qualified_name] = cog
                 option = discord.SelectOption(emoji=self.help.emojis.get(cog.qualified_name) or '❓', label=F"{cog.qualified_name} Category", description=cog.description, value=cog.qualified_name)
                 options.append(option)
         self.add_item(item=HelpSelect(placeholder="Where do you want to go...", options=options, min_values=1, max_values=1, view=self))
-        self.add_item(item=discord.ui.Button(emoji="🔗", label="Invite Bot", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
+        self.add_item(item=discord.ui.Button(emoji="🔗", label="Invite", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
 
     @discord.ui.button(emoji="🏠", label=F"Home Page", style=discord.ButtonStyle.green, disabled=True)
     async def home(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
         await interaction.response.edit_message(embed=self.homepage)
 
-    @discord.ui.button(emoji="💣", label=F"Delete Message", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(emoji="💣", label=F"Delete Message", style=discord.ButtonStyle.red)
     async def delete(self, button:discord.ui.Button, interaction:discord.Interaction):
         await interaction.message.delete()
         await interaction.response.send_message(content="Deleted the message...", ephemeral=True)
@@ -104,7 +100,6 @@ class CustomHelp(commands.HelpCommand):
         view = HelpView(self, mapping)
         view.homepage.add_field(name="Prefix:", value=self.context.prefix or "In DM you don't need to use prefix", inline=False)
         view.homepage.add_field(name="Arguments:", value="[] means the argument is optional.\n<> means the argument is required.\n***DO NOT TYPE THESE SYMBOLS WHEN USING A COMMAND***", inline=False)
-        view.homepage.set_thumbnail(url=self.context.me.display_avatar.url)
         view.homepage.set_author(name=self.context.author, icon_url=self.context.author.display_avatar.url)
         view.message = await self.context.reply(embed=view.homepage, view=view)
         return
