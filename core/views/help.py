@@ -4,19 +4,22 @@ from discord.ext import commands
 class HelpSelect(discord.ui.Select):
     def __init__(self, view, **kwargs):
         super().__init__(**kwargs)
-        self.view = view
+        self.help = view.help
+        self.hompage = view.homepage
+        self.cogs = view.cogs
+        self.home = view.home
     def gts(self, command):
         return F"• **{command.qualified_name}** {command.signature} - {command.help or 'No help found...'}\n"
     async def callback(self, interaction:discord.Interaction):
-        self.view.home.disabled = False
-        cog = self.view.cogs.get(self.values[0])
+        self.home.disabled = False
+        cog = self.cogs.get(self.values[0])
         helpmbed = discord.Embed(
-            color=self.view.help.context.bot.color,
-            title=F"{self.view.help.emojis.get(cog.qualified_name) or '❓'} {cog.qualified_name}",
+            color=self.help.context.bot.color,
+            title=F"{self.help.emojis.get(cog.qualified_name) or '❓'} {cog.qualified_name}",
             description=F"{cog.description}\n\n{''.join(self.gts(command) for command in cog.walk_commands())}",
-            timestamp=self.view.help.context.message.created_at
+            timestamp=self.help.context.message.created_at
         )
-        helpmbed.set_thumbnail(url=self.view.help.context.me.display_avatar.url)
+        helpmbed.set_thumbnail(url=self.help.context.me.display_avatar.url)
         helpmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
         helpmbed.set_footer(text="<> is required | [] is optional")
         await interaction.response.edit_message(embed=helpmbed, view=self.view)

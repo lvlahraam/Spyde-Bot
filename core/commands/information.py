@@ -89,7 +89,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         invmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         view = discord.ui.View()
-        view.add_item(item=discord.ui.Button(emoji="🔗", label="Invite URL", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
+        view.add_item(item=discord.ui.Button(emoji="🔗", label="Invite URL", url=discord.utils.oauth_url(self.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
         await ctx.reply(embed=invmbed, view=view)
 
     # Ping
