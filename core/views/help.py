@@ -12,6 +12,7 @@ class HelpSelect(discord.ui.Select):
         return F"• **{command.qualified_name}** {command.signature} - {command.help or 'No help found...'}\n"
     async def callback(self, interaction:discord.Interaction):
         self.home.disabled = False
+        self.home.style = discord.ButtonStyle.green
         cog = self.cogs.get(self.values[0])
         helpmbed = discord.Embed(
             color=self.help.context.bot.color,
@@ -43,10 +44,11 @@ class HelpView(discord.ui.View):
         self.add_item(item=HelpSelect(placeholder="Where do you want to go...", options=options, min_values=1, max_values=1, view=self))
         self.add_item(item=discord.ui.Button(emoji="🔗", label="Invite Bot", url=discord.utils.oauth_url(self.help.context.bot.user.id, permissions=discord.Permissions.all(), scopes=['bot', 'applications.commands'])))
 
-    @discord.ui.button(emoji="🏠", label=F"Home Page", style=discord.ButtonStyle.green, disabled=True)
+    @discord.ui.button(emoji="🏠", label=F"Home Page", style=discord.ButtonStyle.grey, disabled=True)
     async def home(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
-        await interaction.response.edit_message(embed=self.homepage)
+        button.style = discord.ButtonStyle.green
+        await interaction.response.edit_message(embed=self.homepage, view=button.view)
 
     @discord.ui.button(emoji="💣", label=F"Delete Message", style=discord.ButtonStyle.red)
     async def delete(self, button:discord.ui.Button, interaction:discord.Interaction):
