@@ -1,5 +1,5 @@
 # NOTE: THIS BOT DOES NOT DOWNLOAD FILE ON THE DIRECTORY
-import discord, pomice, re, asyncio, datetime
+import discord, pomice, asyncio, datetime, io
 from discord.ext import commands
 from core.views import confirm, pagination
 
@@ -390,15 +390,20 @@ class Music(commands.Cog, description="Jamming out with these!"):
         )
         npmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
-            npmbed.add_field(name="Title:", value=ctx.voice_client.current.title, inline=False)
-            npmbed.add_field(name="By:", value=ctx.voice_client.current.author, inline=False)
-            npmbed.add_field(name="Requester:", value=ctx.voice_client.current.requester.mention, inline=False)
-            npmbed.add_field(name="Duration", value=F"{self.bar(ctx.voice_client.position, ctx.voice_client.current.length)} | {self.duration(ctx.voice_client.position)} - {self.duration(ctx.voice_client.current.length)}", inline=False)
-            if len(ctx.voice_client.lqueue) > 1: npmbed.add_field(name="Next:", value=ctx.voice_client.lqueue[1], inline=False)
-            npmbed.set_thumbnail(url=ctx.voice_client.current.thumbnail or discord.Embed.Empty)
+            params = {
+                'title': ctx.voice_client.current.title,
+                'thumbnail_url': ctx.voice_client.current.thumbnail,
+                'seconds_played': ctx.voice_client.position,
+                'total_seconds': ctx.voice_client.current.length,
+                'line_1': ctx.voice_client.current.author,
+                'line_2': ctx.voice_client.current.requester.display_name
+            }
+            session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+            response = io.BytesIO(await session.read())
+            npmbed.set_image(url="attachment://player.png")
             view = discord.ui.View()
             view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
-            return await ctx.reply(embed=npmbed, view=view)
+            return await ctx.reply(embed=npmbed, file=discord.File(fp=response, filename="player.png"), view=view)
         npmbed.description = "Nothing is playing"
         return await ctx.reply(embed=npmbed)
 
@@ -571,16 +576,21 @@ class Music(commands.Cog, description="Jamming out with these!"):
             title="Playing:",
             timestamp=track.ctx.message.created_at
         )
-        tsmbed.add_field(name="Title:", value=track.title, inline=False)
-        tsmbed.add_field(name="By:", value=track.author, inline=False)
-        tsmbed.add_field(name="Requester:", value=track.requester.mention, inline=False)
-        tsmbed.add_field(name="Duration", value=F"{self.duration(track.length)}", inline=False)
-        if len(player.lqueue) > 1: tsmbed.add_field(name="Next:", value=player.lqueue[1], inline=False)
-        tsmbed.set_thumbnail(url=track.thumbnail or discord.Embed.Empty)
+        tsmbed.set_image(url="attachment://player.png")
         tsmbed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
+        params = {
+            'title': track.ctx.voice_client.current.title,
+            'thumbnail_url': track.ctx.voice_client.current.thumbnail,
+            'seconds_played': track.ctx.voice_client.position,
+            'total_seconds': track.ctx.voice_client.current.length,
+            'line_1': track.ctx.voice_client.current.author,
+            'line_2': track.ctx.voice_client.current.requester.display_name
+        }
+        session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+        response = io.BytesIO(await session.read())
         view = discord.ui.View()
         view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
-        await track.ctx.reply(embed=tsmbed, view=view)
+        await track.ctx.reply(embed=tsmbed, file=discord.File(fp=response, filename="player.png"), view=view)
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player:pomice.Player, track:pomice.Track, reason:str):
@@ -591,15 +601,21 @@ class Music(commands.Cog, description="Jamming out with these!"):
                     title="Ended:",
                     timestamp=track.ctx.message.created_at
                 )
-                tembed.add_field(name="Title:", value=track.title, inline=False)
-                tembed.add_field(name="By:", value=track.author, inline=False)
-                tembed.add_field(name="Requester:", value=track.requester.mention, inline=False)
-                tembed.add_field(name="Duration", value=F"{self.duration(track.length)}", inline=False)
-                tembed.set_thumbnail(url=track.thumbnail or discord.Embed.Empty)
+                tembed.set_image(url="attachment://player.png")
                 tembed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
+                params = {
+                    'title': track.ctx.voice_client.current.title,
+                    'thumbnail_url': track.ctx.voice_client.current.thumbnail,
+                    'seconds_played': track.ctx.voice_client.position,
+                    'total_seconds': track.ctx.voice_client.current.length,
+                    'line_1': track.ctx.voice_client.current.author,
+                    'line_2': track.ctx.voice_client.current.requester.display_name
+                }
+                session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+                response = io.BytesIO(await session.read())
                 view = discord.ui.View()
                 view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
-                return await track.ctx.reply(embed=tembed)
+                return await track.ctx.reply(embed=tembed, file=discord.File(fp=response, filename="player.png"), view=view)
             player.lqueue.pop(0)
             return await player.play(track=(await player.queue.get()))
         await player.play(track=player.loop)

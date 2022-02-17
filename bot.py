@@ -20,7 +20,6 @@ async def create_pool_postgres():
         await bot.postgres.execute("CREATE TABLE IF NOT EXISTS tickets (guild_name text, guild_id bigint, cag bigint, num bigint)")
         await bot.postgres.execute("CREATE TABLE IF NOT EXISTS notes (user_name text, user_id bigint, task text, jump_url text)")
         os.environ["TABLES"] = "blacklist, prefixes, welcome, goodbye, tickets, notes"
-    
 
 async def get_prefix(bot, message:discord.Message):
     if not message.guild:
