@@ -393,8 +393,8 @@ class Music(commands.Cog, description="Jamming out with these!"):
             params = {
                 'title': ctx.voice_client.current.title,
                 'thumbnail_url': ctx.voice_client.current.thumbnail,
-                'seconds_played': ctx.voice_client.position,
-                'total_seconds': ctx.voice_client.current.length,
+                'seconds_played': ctx.voice_client.position/1000,
+                'total_seconds': ctx.voice_client.current.length/1000,
                 'line_1': ctx.voice_client.current.author,
                 'line_2': ctx.voice_client.current.requester.display_name
             }
@@ -579,12 +579,11 @@ class Music(commands.Cog, description="Jamming out with these!"):
         tsmbed.set_image(url="attachment://player.png")
         tsmbed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
         params = {
-            'title': track.ctx.voice_client.current.title,
-            'thumbnail_url': track.ctx.voice_client.current.thumbnail,
-            'seconds_played': track.ctx.voice_client.position,
-            'total_seconds': track.ctx.voice_client.current.length,
-            'line_1': track.ctx.voice_client.current.author,
-            'line_2': track.ctx.voice_client.current.requester.display_name
+            'title': track.title,
+            'thumbnail_url': track.thumbnail,
+            'seconds_played': track.position/1000,
+            'total_seconds': track.length/1000,
+            'line_1': track.author,
         }
         session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
         response = io.BytesIO(await session.read())
