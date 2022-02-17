@@ -15,6 +15,7 @@ class ViewVote(discord.ui.View):
             self.vote += 1
             self.counter.label = F"{self.vote}/{self.voters}"
             self.voted[interaction.user.id] = True
+            await interaction.response.edit_message(view=button.view)
             return await interaction.response.send_message(content=F"{interaction.user.mention} has voted for: {self.usage}", delete_after=2.5)
         await interaction.response.send_message(content=F"{interaction.user.mention} you can't vote more than one time", ephemeral=True)
 
@@ -27,6 +28,7 @@ class ViewVote(discord.ui.View):
         if self.voted.get(interaction.user.id):
             self.vote -= 1
             self.counter.label = F"{self.vote}/{self.voters}"
+            await interaction.response.edit_message(view=button.view)
             return await interaction.response.send_message(content=F"{interaction.user.mention} has removed his vote for: {self.usage}")
         await interaction.response.send_message(content=F"{interaction.user.mention} you have never voted", ephemeral=True)
 
