@@ -385,17 +385,17 @@ class Music(commands.Cog, description="Jamming out with these!"):
     async def nowplaying(self, ctx:commands.Context):
         npmbed = discord.Embed(
             color=self.bot.color,
-            title="Now Playing:",
+            title="Playing:",
             timestamp=ctx.voice_client.current.ctx.message.created_at
         )
         npmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
             params = {
-                'title': ctx.voice_client.current.title,
+                'title': ctx.voice_client.current.author,
                 'thumbnail_url': ctx.voice_client.current.thumbnail,
                 'seconds_played': ctx.voice_client.position/1000,
                 'total_seconds': ctx.voice_client.current.length/1000,
-                'line_1': ctx.voice_client.current.author,
+                'line_1': ctx.voice_client.current.title,
                 'line_2': ctx.voice_client.current.requester.display_name
             }
             session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
@@ -571,25 +571,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
 
     @commands.Cog.listener()
     async def on_pomice_track_start(self, player:pomice.Player, track:pomice.Track):
-        tsmbed = discord.Embed(
-            color=self.bot.color,
-            title="Playing:",
-            timestamp=track.ctx.message.created_at
-        )
-        tsmbed.set_image(url="attachment://player.png")
-        tsmbed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
-        params = {
-            'title': track.title,
-            'thumbnail_url': track.thumbnail,
-            'seconds_played': track.position/1000,
-            'total_seconds': track.length/1000,
-            'line_1': track.author,
-        }
-        session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
-        response = io.BytesIO(await session.read())
-        view = discord.ui.View()
-        view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
-        await track.ctx.reply(embed=tsmbed, file=discord.File(fp=response, filename="player.png"), view=view)
+        await self.nowplaying()
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player:pomice.Player, track:pomice.Track, reason:str):
@@ -603,12 +585,11 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 tembed.set_image(url="attachment://player.png")
                 tembed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
                 params = {
-                    'title': track.title,
+                    'title': track.author,
                     'thumbnail_url': track.thumbnail,
                     'seconds_played': track.position,
                     'total_seconds': track.length,
-                    'line_1': track.author,
-                    'line_2': track.requester
+                    'line_1': track.title,
                 }
                 session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
                 response = io.BytesIO(await session.read())
