@@ -78,6 +78,7 @@ class CustomHelp(commands.HelpCommand):
             }
         )
         self.emojis = {
+            "Economy": "💸",
             "Fun": "😹",
             "Game": "🕹️",
             "Information": "🔎",
