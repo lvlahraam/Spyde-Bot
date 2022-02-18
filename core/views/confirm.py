@@ -19,16 +19,3 @@ class ViewConfirm(discord.ui.View):
         self.clear_items()
         await interaction.response.edit_message(content="Cancelled", view=button.view)
         self.stop()
-    
-    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id != self.ctx.message.author.id:
-            icheckmbed = discord.Embed(
-                color=self.ctx.bot.color,
-                title=F"You can't use this",
-                description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use this\nCause they did the command\nIf you want to use this, do what they did",
-                timestamp=interaction.message.created_at
-            )
-            icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-            await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
-            return False
-        return True
