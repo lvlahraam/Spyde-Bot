@@ -7,7 +7,7 @@ class Economy(commands.Cog, description="Buying Bitcoin and NFTs with these!"):
 
     @commands.command(name="addmoney", description="Adds the given amount of momey to you or the given user")
     @commands.is_owner()
-    async def addmoney(self, ctx:commands.Context, amount:int=commands.Option(description="The amount you want give"), user:discord.User=commands.Option(description="The user you want to give the amount to", default=None):
+    async def addmoney(self, ctx:commands.Context, amount:int=commands.Option(description="The amount you want give"), user:discord.User=commands.Option(description="The user you want to give the amount to", default=None)):
         user = user or ctx.author
         await ctx.send("Economy is not ready")
 
