@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-class Economy(commands.Cog, description=Buying Bitcoin and NFTs with these):
+class Economy(commands.Cog, description="Buying Bitcoin and NFTs with these!"):
     def __init__(self, bot):
         self.bot = bot
 
