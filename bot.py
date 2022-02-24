@@ -47,7 +47,7 @@ async def create_node_pomice():
     await bot.pomice.create_node(bot=bot, host="lava.link", port="80", password="mom", identifier="node1lava.link", spotify_client_id=spotify_id, spotify_client_secret=spotify_secret)
     print("Created a Pomice Node(s)")
 
-class SymBase(commands.AutoShardedBot):
+class SpydeBase(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.prefixes = {}
@@ -87,7 +87,7 @@ class SymBase(commands.AutoShardedBot):
         if len(text) > limit: return text[:limit-3] + "..."
         return text
 
-bot = SymBase(
+bot = SpydeBase(
     slash_commands=True,
     command_prefix=get_prefix,
     strip_after_prefix=True,
