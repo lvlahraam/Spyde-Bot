@@ -225,9 +225,10 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         if amount > 100:
             pumbed.title = "Can't clear more than 100 messages"
             return await ctx.reply(embed=pumbed, delete_after=5)
-        await ctx.channel.purge(limit=amount+1)
-        pumbed.title = F"Deleted {amount} amount of messages"
+        deleted = await ctx.channel.purge(limit=amount)
+        pumbed.title = F"Deleted {len(deleted)} amount of messages"
         await ctx.reply(embed=pumbed, delete_after=5)
+        await ctx.message.delete(delay=2.5)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
