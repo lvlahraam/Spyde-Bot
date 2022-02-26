@@ -303,8 +303,21 @@ class Music(commands.Cog, description="Jamming out with these!"):
             timestamp=ctx.message.created_at
         )
         dcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        params = {
+            'title': ctx.voice_client.current.author,
+            'thumbnail_url': ctx.voice_client.current.thumbnail,
+            'seconds_played': ctx.voice_client.position/1000,
+            'total_seconds': ctx.voice_client.current.length/1000,
+            'line_1': ctx.voice_client.current.title,
+            'line_2': ctx.voice_client.current.requester.display_name
+        }
+        session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+        response = io.BytesIO(await session.read())
+        dcmbed.set_image(url="attachment://player.png")
+        view = discord.ui.View()
+        view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
         await ctx.voice_client.destroy()                    
-        return await ctx.reply(embed=dcmbed)
+        return await ctx.reply(embed=dcmbed, file=discord.File(fp=response, filename="player.png"))
 
     # Play
     @commands.command(name="play", aliases=["pl"], help="Plays music with the given query, the query can be a url or a title or a playlist")
