@@ -722,7 +722,25 @@ class Music(commands.Cog, description="Jamming out with these!"):
 
     @commands.Cog.listener()
     async def on_pomice_track_start(self, player:pomice.Player, track:pomice.Track):
-        await self.nowplaying(track.ctx)
+        tsmbed = discord.Embed(
+            color=self.bot.color,
+            title="Playing:",
+            timestamp=track.ctx.message.created_at
+        )
+        params = {
+            'title': track.author,
+            'thumbnail_url': track.thumbnail,
+            'seconds_played': 0,
+            'total_seconds': track.length/1000,
+            'line_1': track.title,
+            'line_2': track.requester.display_name
+        }
+        session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+        response = io.BytesIO(await session.read())
+        tsmbed.set_image(url="attachment://player.png")
+        view = discord.ui.View()
+        view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=track.uri))
+        return await track.ctx.reply(embed=tsmbed, file=discord.File(fp=response, filename="player.png"), view=view)
 
     @commands.Cog.listener()
     async def on_pomice_track_end(self, player:pomice.Player, track:pomice.Track, reason:str):
