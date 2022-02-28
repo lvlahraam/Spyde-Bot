@@ -26,8 +26,8 @@ class SuggestModal(discord.ui.Modal):
             title=F"Suggestion from {interaction.user}",
             timestamp=interaction.message.created_at
         )
-        sgmodalmbed.add_field(name="Title:", value=self.children[0].value)
-        sgmodalmbed.add_field(name="Reason:", value=self.children[1].value)
+        sgmodalmbed.add_field(name="Title:", value=self.children[0].value, inline=False)
+        sgmodalmbed.add_field(name="Reason:", value=self.children[1].value, inline=False)
         sgmodalmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
         confirmview = confirm.ViewConfirm(self.ctx)
         await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview, ephemeral=True)

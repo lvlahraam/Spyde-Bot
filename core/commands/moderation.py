@@ -82,7 +82,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         )
         tombed.add_field(name="Member:", value=member.mention, inline=False)
         tombed.add_field(name="Moderator:", value=ctx.author.mention, inline=False)
-        tombed.add_field(name="Member:", value=reason, inline=False)
+        tombed.add_field(name="Reason:", value=reason, inline=False)
         tombed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             if option == "untimeout":

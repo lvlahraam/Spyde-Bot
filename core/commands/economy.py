@@ -43,8 +43,8 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
                 await self.bot.mongodb.economy.update_one({"user_id": ctx.author.id}, {"$set": {"balance": author["balance"]-amount}})
                 await self.bot.mongodb.economy.update_one({"user_id": user.id}, {"$set": {"balance": giving["balance"]+amount}})
                 gmbed.title = "Money has been transfered!"
-                gmbed.description = F"{amount}$ has been removed from {ctx.author.mention}!\n{amount}$ has been added to {user.mention}!"
-                gmbed.description = F"{user.mention} now has {giving['balance']+amount}$!\n{ctx.author.mention} now has {author['balance']-amount}$!"
+                gmbed.add_field(name="Transfer:", value=F"{amount}$ has been removed from {ctx.author.mention}!\n{amount}$ has been added to {user.mention}!", inline=False)
+                gmbed.add_field(name="Balance", value=F"{user.mention} now has {giving['balance']+amount}$!\n{ctx.author.mention} now has {author['balance']-amount}$!", inline=False)
         else:
             gmbed.title = F"{ctx.author.name} doesn't have a account yet!"
         await ctx.reply(embed=gmbed)
