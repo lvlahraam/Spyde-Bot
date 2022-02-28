@@ -47,7 +47,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
 
     # Notes
     @commands.command(name="notes", aliases=["nt"], help="Taking notes with this")
-    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use"), *, value:typing.Union[str, int]=commands.Option(description="The value you want to use", default=None)):
+    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use"), *, value:str=commands.Option(description="The value you want to use", default=None)):
         ntmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
@@ -55,33 +55,24 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id}).to_list(length=100)
         if option == "add":
-            if type(value) == str:
-                note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
-                ntmbed.description = value
-                if note:
-                    ntmbed.title = "This task already in your notes:"
-                else:
-                    ntmbed.title = "Added the task to your notes:"
-                    await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "task": value, "jump_url": ctx.message.jump_url})
+            note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
+            ntmbed.description = value
+            if note:
+                ntmbed.title = "This task already in your notes:"
             else:
-                ntmbed.title = "You need to specify a task as string"
+                ntmbed.title = "Added the task to your notes:"
+                await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "task": value, "jump_url": ctx.message.jump_url})
         elif option == "remove":
             if not notes:
                 ntmbed.title = "You don't have any note"
             else:
-                if type(value) == int:
-                    tasks = []
-                    for stuff in notes:
-                        tasks.append(stuff["task"])
-                    if len(tasks) < value:
-                        ntmbed.title = "This number is not in your notes:"
-                        ntmbed.description = value
-                    else:
-                        ntmbed.title = "Removed the task from your notes:"
-                        ntmbed.description = tasks[value]
-                        await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "task": tasks[value]})
+                ntmbed.description = value
+                note = await self.bot.mongodb.find_one({"user_id": ctx.author.id, "task": value})
+                if note:
+                    ntmbed.title = "Removed the task from your notes:"
+                    await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "task": value})
                 else:
-                    ntmbed.title = "You need to specify a task as number"
+                    ntmbed.title = "This number is not in your notes:"
         elif option == "clear":
             if not notes:
                 ntmbed.title = "You don't have any note"
