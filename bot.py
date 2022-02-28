@@ -23,7 +23,7 @@ async def get_prefix(bot, message:discord.Message):
     prefix = bot.prefixes.get(message.guild.id)
     if not prefix:
         mongo = await bot.mongodb.prefixes.find_one({"guild_id": message.guild.id})
-        if mongo.get("prefix"):
+        if mongo:
             prefix = bot.prefixes[message.guild.id] = mongo["prefix"]
         else:
             prefix = bot.prefixes[message.guild.id] = bot.default_prefix
