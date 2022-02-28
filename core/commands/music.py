@@ -714,8 +714,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
                 )
                 lymbed.set_thumbnail(url=lyrics.images.track or discord.Embed.Empty)
                 lymbed.set_author(name=lyrics.artist, icon_url=lyrics.images.background or discord.Embed.Empty)
-                lymbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-                es.append(lymbed)
             return await pagination.ViewPagination(ctx, es).start() if len(es) > 1 else await ctx.reply(embed=es[0], ephemeral=True)
         lymbed.description = F"Didn't find any lyrics for {music}"
         return await ctx.reply(embed=lymbed)
@@ -752,7 +750,6 @@ class Music(commands.Cog, description="Jamming out with these!"):
                     timestamp=track.ctx.message.created_at
                 )
                 tembed.set_image(url="attachment://player.png")
-                tembed.set_footer(text=track.requester, icon_url=track.requester.display_avatar.url)
                 params = {
                     'title': track.author,
                     'thumbnail_url': track.thumbnail,

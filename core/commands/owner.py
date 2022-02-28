@@ -81,45 +81,53 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
     @commands.command(name="reload", aliases=["rld"], help="Reloads the given or every cog")
     @commands.is_owner()
     async def reload(self, ctx:commands.Context, *, cog:str=commands.Option(description="The cog'(s) name you want to reload", default=None)):
-        reloadmbed = discord.Embed(
+        rldmbed = discord.Embed(
             color=self.bot.color,
             description="",
             timestamp=ctx.message.created_at
         )
+        rldmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not cog:
-            reloadmbed.title = "Reloaded every cog"
-            reloadmbed.description += F"Commands:\n"
+            rldmbed.title = "Reloaded every cog"
+            rldmbed.description += F"Commands:\n"
             for command in self.bot._commands:
                 try:
                     self.bot.reload_extension(F"core.commands.{command}")
-                    reloadmbed.description += F"🥗 {command}\n"
+                    rldmbed.description += F"🥗 {command}\n"
                 except Exception as error:
-                    reloadmbed.description += F"🏮 {command}\n"
-                    reloadmbed.description += F"🔰 {error}\n"
-            reloadmbed.description += F"Events:\n"
+                    rldmbed.description += F"🏮 {command}\n"
+                    rldmbed.description += F"🔰 {error}\n"
+            rldmbed.description += F"Events:\n"
             for event in self.bot._events:
                 try:
                     self.bot.reload_extension(F"core.events.{event}")
-                    reloadmbed.description += F"🥗 {event}\n"
+                    rldmbed.description += F"🥗 {event}\n"
                 except Exception as error:
-                    reloadmbed.description += F"🏮 {event}\n"
-                    reloadmbed.description += F"🔰 {error}\n"
-            return await ctx.reply(embed=reloadmbed)
-        reloadmbed.title = F"Reloaded {cog}."
+                    rldmbed.description += F"🏮 {event}\n"
+                    rldmbed.description += F"🔰 {error}\n"
+            return await ctx.reply(embed=rldmbed)
+        rldmbed.title = F"Reloaded {cog}."
         self.bot.reload_extension(cog)
-        await ctx.reply(embed=reloadmbed)
+        await ctx.reply(embed=rldmbed)
 
     # Toggle
     @commands.command(name="toggle", toggle=["tg"], help="Toggles on and off the given command")
     @commands.is_owner()
     async def toggle(self, ctx:commands.Context, command:str):
         command = self.bot.get_command(command)
+        tgmbed = discord.Embed(
+            color=self.bot.color,
+            title=F"Toggled",
+            timestamp=ctx.message.created_at
+        )
+        tgmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not command.enabled:
             command.enabled = True
-            await ctx.reply(F"Enabled {command.name} command")
+            tgmbed.description = F"Enabled {command.name} command"
         else:
             command.enabled = False
-            await ctx.reply(F"Disabled {command.name} command.")
+            tgmbed.description = F"Disabled {command.name} command"
+        await ctx.reply(embed=tgmbed)
 
     # Shutdown
     @commands.command(name="shutdown",  help="Shutdowns the bot")
@@ -139,35 +147,30 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
     @commands.is_owner()
     async def blacklist(self, ctx:commands.Context, user:discord.User=commands.Option(description="The user you want to blacklist", default=None), *, reason:str=commands.Option(description="The reason for blacklisting the user", default=None)):
         reason = reason or "Unspecified"
-        if not user:
-            blacklistsmbed = discord.Embed(
-                color=self.bot.color,
-                description="",
-                timestamp=ctx.message.created_at
-            )
-            blacklistsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-            blacklisted = await self.bot.mongodb.blacklist.find().to_list(length=100)
-            if not blacklisted:
-                blacklistsmbed.title = "Nobody is in Blacklist"
-            else:
-                blacklistsmbed.title = "Users in Blacklist"
-                for users in blacklisted:
-                    user = self.bot.get_user(users["user_id"])
-                    blacklistsmbed.description += F"{user} | {user.mention} - {users['reason']}\n"
-            return await ctx.reply(embed=blacklistsmbed)
-        blacklisted = await self.bot.mongodb.blacklist.find_one({"user_id": user.id})
-        blacklistmbed = discord.Embed(
+        blmbed = discord.Embed(
             color=self.bot.color,
+            description="",
             timestamp=ctx.message.created_at
         )
-        blacklistmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if not blacklisted:
-            await self.bot.mongodb.blacklist.insert_one({"user_name": user.name, "user_id": user.id, "reason": reason})
-            blacklistmbed.title = F"Added {user} to blacklist"
+        blmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if not user:
+            blacklists = await self.bot.mongodb.blacklist.find().to_list(length=100)
+            if not blacklists:
+                blmbed.title = "Nobody is in Blacklist"
+            else:
+                blmbed.title = "Users in Blacklist"
+                for users in blacklists:
+                    user = self.bot.get_user(users["user_id"])
+                    blmbed.description += F"{user} | {user.mention} - {users['reason']}\n"
         else:
-            await self.bot.mongodb.blacklist.delete_many({"user_id": user.id})
-            blacklistmbed.title = F"Removed {user} from blacklist"
-        await ctx.reply(embed=blacklistmbed)
+            blacklisted = await self.bot.mongodb.blacklist.find_one({"user_id": user.id})
+            if not blacklisted:
+                await self.bot.mongodb.blacklist.insert_one({"user_name": user.name, "user_id": user.id, "reason": reason})
+                blmbed.title = F"Added {user} to blacklist"
+            else:
+                await self.bot.mongodb.blacklist.delete_many({"user_id": user.id})
+                blmbed.title = F"Removed {user} from blacklist"
+        await ctx.reply(embed=blmbed)
 
     # Screenshot
     @commands.command(name="screenshot", aliases=["ss"], help="Gives a preview from the given website")
