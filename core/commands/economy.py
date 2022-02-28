@@ -13,7 +13,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        cambed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        cambed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not balance:
             await self.bot.mongodb.economy.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "balance": 0})
             cambed.title = "Account has been created!"
@@ -33,7 +33,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
-        gmbed.set_footer(text=ctx.author, icon_url=ctx.author.avatar_url)
+        gmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if author:
             if not giving:
                 gmbed.title = F"{user.name} doesn't have a account yet!"
