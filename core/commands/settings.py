@@ -48,7 +48,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     # Welcome
     @commands.command(name="welcome", aliases=["wel"], help="Setting up the welcomer with these")
     @commands.guild_only()
-    async def welcome(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "show"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
+    async def welcome(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "status"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
         welmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
@@ -82,7 +82,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                     await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
                 welmbed.title = "You need to pass a string"
-        elif option == "show":
+        elif option == "status":
             if not welcome:
                 welmbed.title = "Welcome is turned off"
             else:
@@ -95,7 +95,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     # Goodbye
     @commands.command(name="goodbye", aliases=["bye"], help="Setting up the goodbyer with this")
     @commands.guild_only()
-    async def goodbye(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "show"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
+    async def goodbye(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "status"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
         byembed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
@@ -129,7 +129,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                     await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
                 byembed.title = "You need to pass a string"
-        elif option == "show":
+        elif option == "status":
             if not goodbye:
                 byembed.title = "Goodbye is turned off"
             else:
