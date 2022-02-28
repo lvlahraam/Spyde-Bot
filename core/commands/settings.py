@@ -25,7 +25,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 else:
                     data = await self.bot.mongodb.prefixes.find_one({"guild_id": ctx.guild.id})
                     if not data:
-                        await self.bot.mongodb.prefixes.insert_one(await self.bot.mongodb.prefixes.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "prefix": prefix}))
+                        await self.bot.mongodb.prefixes.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "prefix": prefix})
                     else:
                         await self.bot.mongodb.prefixes.update_one({"guild_id": ctx.guild.id}, {"$set": {"prefix": prefix}})
                     self.bot.prefixes[ctx.guild.id] = prefix
