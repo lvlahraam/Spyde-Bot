@@ -326,7 +326,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
     async def play(self, ctx:commands.Context, *, query:str=commands.Option(description="The query you want the music from")):
         plmbed = discord.Embed(
             color=self.bot.color,
-            title="Play",
+            title="Play:",
             timestamp=ctx.message.created_at
         )
         plmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
