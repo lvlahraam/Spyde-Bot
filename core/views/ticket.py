@@ -47,7 +47,7 @@ class TicketView(discord.ui.View):
             timestamp=interaction.message.created_at,
         )
         tkopenmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
-        await self.bot.mongodb.tickets.find_one_and_update({"guild_id": interaction.channel.guild.id}, {"$inc": {"number": num+1}}, upsert=True)
+        await self.bot.mongodb.tickets.find_one_and_update({"guild_id": interaction.channel.guild.id}, {"$set": {"number": num+1}})
         await interaction.response.send_message(content=F"Your ticket has been opened in {channel.mention}", ephemeral=True)
         await interaction.channel.set_permissions(interaction.user, view_channel=False)
         await channel.send(embed=tkopenmbed, view=CloseTicketView(self.bot, interaction.user, interaction.channel), allowed_mentions=discord.AllowedMentions.all())
