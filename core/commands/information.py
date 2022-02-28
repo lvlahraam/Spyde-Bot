@@ -102,11 +102,11 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         unpimbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         tstart = time.perf_counter()
-        pstart = time.perf_counter()
-        await self.bot.postgres.execute("SELECT 1")
+        mstart = time.perf_counter()
+        await self.bot.mongodb.prefixes.count_documents()
         unpimsg = await ctx.reply(embed=unpimbed)
         tend = time.perf_counter()
-        pend = time.perf_counter()
+        mend = time.perf_counter()
         dopimbed = discord.Embed(
             color=self.bot.color,
             title="🏓 Pong:",
@@ -114,7 +114,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         )
         dopimbed.add_field(name="Websocket:", value=F"{self.bot.latency*1000}ms", inline=False)
         dopimbed.add_field(name="Typing:", value=F"{(tend-tstart)*1000}ms", inline=False)
-        dopimbed.add_field(name="Postgres:", value=F"{(pend-pstart)*1000}", inline=False)
+        dopimbed.add_field(name="MongoDB:", value=F"{(mend-mstart)*1000}", inline=False)
         dopimbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await unpimsg.edit(embed=dopimbed)
 

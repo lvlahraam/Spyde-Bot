@@ -18,18 +18,10 @@ class OnGuild(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild:discord.Guild):
         del self.bot.prefixes[guild.id]
-        prefix = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", guild.id)
-        if prefix:
-            await self.bot.postgres.execute("DELETE FROM prefixes WHERE guild_id=$1", guild.id)
-        tickets = await self.bot.postgres.fetchval("SELECT msg FROM welcome WHERE guild_id=$1", guild.id)
-        if tickets:
-            await self.bot.postgres.execute("DELETE FROM welcome WHERE guild_id=$1", guild.id)
-        welcome = await self.bot.postgres.fetchval("SELECT msg FROM welcome WHERE guild_id=$1", guild.id)
-        if welcome:
-            await self.bot.postgres.execute("DELETE FROM welcome WHERE guild_id=$1", guild.id)
-        goodbye = await self.bot.postgres.fetchval("SELECT msg FROM goodbye WHERE guild_id=$1", guild.id)
-        if goodbye:
-            await self.bot.postgres.execute("DELETE FROM goodbye WHERE guild_id=$1", guild.id)
+        await self.bot.mongodb.prefixes.find_one_and_delete({"guild_id": guild.id})
+        await self.bot.mongodb.tickets.find_one_and_delete({"guild_id": guild.id})
+        await self.bot.mongodb.welcome.find_one_and_delete({"guild_id": guild.id})
+        await self.bot.mongodb.goodbye.find_one_and_delete({"guild_id": guild.id})
 
 def setup(bot):
     bot.add_cog(OnGuild(bot))

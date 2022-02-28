@@ -8,12 +8,11 @@ class OnMember(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member:discord.Member):
         if member.bot: return
-        welcome = await self.bot.postgres.fetchval("SELECT * FROM welcome WHERE guild_id=$1", member.guild.id)
+        welcome = await self.bot.mongodb.welcome.find_one({"guild_id": member.guild.id})
         if welcome:
             fetch = await self.bot.fetch_user(member.id)
-            ch = await self.bot.postgres.fetchval("SELECT ch FROM welcome WHERE guild_id=$1", member.guild.id)
-            msg = await self.bot.postgres.fetchval("SELECT msg FROM welcome WHERE guild_id=$1", member.guild.id)
-            msg = msg.replace(".guild", member.guild.name).replace(".member", member.mention)
+            ch = welcome["channel"]
+            msg = welcome["message"].replace(".guild", member.guild.name).replace(".member", member.mention)
             mi = [
                 F"***Username:*** {member.name}",
                 F"***Discriminator:*** {member.discriminator}",
@@ -40,11 +39,11 @@ class OnMember(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member:discord.Member):
         if member.bot: return
-        goodbye = await self.bot.postgres.fetchval("SELECT * FROM goodbye WHERE guild_id=$1", member.guild.id)
+        goodbye = await self.bot.mongodb.goodbye.find_one({"guild_id": member.guild.id})
         if goodbye:
             fetch = await self.bot.fetch_user(member.id)
-            ch = await self.bot.postgres.fetchval("SELECT ch FROM goodbye WHERE guild_id=$1", member.guild.id)
-            msg = await self.bot.postgres.fetchval("SELECT msg FROM goodbye WHERE guild_id=$1", member.guild.id)
+            ch = goodbye["channel"]
+            msg = goodbye["message"].replace(".guild", member.guild.name).replace(".member", member.mention)
             msg = msg.replace(".guild", member.guild.name).replace(".member", member.mention)
             mi = [
                 F"***Username:*** {member.name}",

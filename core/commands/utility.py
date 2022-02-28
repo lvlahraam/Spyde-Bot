@@ -53,16 +53,16 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             timestamp=ctx.message.created_at
         ) 
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        notes = await self.bot.postgres.fetch("SELECT * FROM notes WHERE user_id=$1", ctx.author.id)
+        notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id})
         if option == "add":
             if type(value) == str:
-                note = await self.bot.postgres.fetchval("SELECT task FROM notes WHERE task=$1 AND user_id=$2", value, ctx.author.id)
+                note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
                 ntmbed.description = value
                 if note:
                     ntmbed.title = "This task already in your notes:"
                 else:
                     ntmbed.title = "Added the task to your notes:"
-                    await self.bot.postgres.execute("INSERT INTO notes(user_name,user_id,task,jump_url) VALUES($1,$2,$3,$4)", ctx.author.name, ctx.author.id, value, ctx.message.jump_url)
+                    await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "task": value, "jump_url": ctx.message.jump_url})
             else:
                 ntmbed.title = "You need to specify a task as string"
         elif option == "remove":
@@ -79,7 +79,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                     else:
                         ntmbed.title = "Removed the task from your notes:"
                         ntmbed.description = tasks[value]
-                        await self.bot.postgres.execute("DELETE FROM notes WHERE user_id=$1 AND task=$2", ctx.author.id, tasks[value])
+                        await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "task": tasks[value]})
                 else:
                     ntmbed.title = "You need to specify a task as number"
         elif option == "clear":
@@ -90,11 +90,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 view.message = await ctx.reply(content="Are you sure if you want to clear everything:", view=view)
                 await view.wait()
                 if view.value:
-                    tasks = []
-                    for stuff in notes:
-                        tasks.append(stuff["task"])
-                    for task in tasks:
-                        await self.bot.postgres.execute("DELETE FROM notes WHERE task=$1 AND user_id=$2", task, ctx.author.id)
+                    await self.bot.mongodb.delete_many({"user_id": ctx.author.id})
                     ntmbed.title = "Cleared your notes!"
         elif option == "show":
             if not notes: 

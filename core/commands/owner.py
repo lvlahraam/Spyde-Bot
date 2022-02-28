@@ -146,7 +146,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
                 timestamp=ctx.message.created_at
             )
             blacklistsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-            blacklisted = await self.bot.postgres.fetch("SELECT * FROM blacklist")
+            blacklisted = await self.bot.mongodb.blacklist.find()
             if not blacklisted:
                 blacklistsmbed.title = "Nobody is in Blacklist"
             else:
@@ -155,17 +155,17 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
                     user = self.bot.get_user(users["user_id"])
                     blacklistsmbed.description += F"{user} | {user.mention} - {users['reason']}\n"
             return await ctx.reply(embed=blacklistsmbed)
-        blacklisted = await self.bot.postgres.fetchval("SELECT user_id FROM blacklist WHERE user_id=$1", user.id)
+        blacklisted = await self.bot.mongodb.blacklist.find_one({"user_id": user.id})
         blacklistmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
         )
         blacklistmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not blacklisted:
-            await self.bot.postgres.execute("INSERT INTO blacklist(user_name,user_id,reason) VALUES($1,$2,$3)", user.name, user.id, reason)
+            await self.bot.mongodb.blacklist.insert_one({"user_name": user.name, "user_id": user.id, "reason": reason})
             blacklistmbed.title = F"Added {user} to blacklist"
         else:
-            await self.bot.postgres.execute("DELETE FROM blacklist WHERE user_id=$1", user.id)
+            await self.bot.mongodb.blacklist.delete_many({"user_id": user.id})
             blacklistmbed.title = F"Removed {user} from blacklist"
         await ctx.reply(embed=blacklistmbed)
 

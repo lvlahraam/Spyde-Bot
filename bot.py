@@ -1,4 +1,4 @@
-import discord, logging, asyncpg, os, aiohttp, pomice, openrobot.api_wrapper, random
+import discord, logging, motro.motor_asyncio, os, aiohttp, pomice, openrobot.api_wrapper, random
 from core.views import help
 from discord.ext import commands
 
@@ -8,31 +8,26 @@ handler = logging.FileHandler(filename="discord.log", encoding="utf-8", mode="w"
 handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
 logger.addHandler(handler)
 
-async def create_pool_postgres():
-    bot.postgres = await asyncpg.create_pool(dsn=os.getenv("DATABASE_URL"))
-    print("Created to the Postgres Pool")
-    tables = os.getenv("TABLES")
-    if not tables:
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS blacklist (user_name text, user_id bigint, reason text)")
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS prefixes (guild_name text, guild_id bigint, prefix text)")
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS welcome (guild_name text, guild_id bigint, msg text, ch bigint)")
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS goodbye (guild_name text, guild_id bigint, msg text, ch bigint)")
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS tickets (guild_name text, guild_id bigint, cag bigint, num bigint)")
-        await bot.postgres.execute("CREATE TABLE IF NOT EXISTS notes (user_name text, user_id bigint, task text, jump_url text)")
-        os.environ["TABLES"] = "blacklist, prefixes, welcome, goodbye, tickets, notes"
+async def create_client_mongodb():
+    url = os.getenv("MONGODB_URL")
+    bot.mongoclient = motor.motor_asyncio.AsyncIOMotorClient(url, serverSelectionTimeoutMS=5000)
+    try:
+        print("Created a MongoDB Client", await bot.mongoclient.server_info())
+        bot.mongodb = bot.mongoclient.bot
+    except Exception:
+        print("Unable to connect to the server.")
 
 async def get_prefix(bot, message:discord.Message):
     if not message.guild:
         return commands.when_mentioned_or(bot.default_prefix)(bot, message)
     prefix = bot.prefixes.get(message.guild.id)
-    if prefix:
-        return commands.when_mentioned_or(prefix)(bot, message)
-    postgres = await bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", message.guild.id)
-    if postgres:
-        prefix = bot.prefixes[message.guild.id] = postgres
-    else:
-        prefix = bot.prefixes[message.guild.id] = bot.default_prefix
-    print(F"Cached {prefix}{'/d' if not postgres else '/p'} | {message.guild.name} - {message.guild.id}")
+    if not prefix:
+        mongo = await bot.mongodb.prefixes.find_one({"guild_id": message.guild.id})
+        if mongo.get("prefix"):
+            prefix = bot.prefixes[message.guild.id] = mongo["prefix"]
+        else:
+            prefix = bot.prefixes[message.guild.id] = bot.default_prefix
+        print(F"Cached {prefix}{'/d' if not mongo else '/m'} | {message.guild.name} - {message.guild.id}")
     return commands.when_mentioned_or(prefix)(bot, message)
 
 async def create_session_aiohttp():
@@ -99,13 +94,13 @@ bot = SpydeBase(
 
 @bot.check
 async def blacklisted(ctx:commands.Context):
-    reason = await bot.postgres.fetchval("SELECT reason FROM blacklist WHERE user_id=$1", ctx.author.id)
+    reason = await bot.mongodb.blacklist.find_one({"user_id": ctx.author.id})
     if not reason: return True
-    raise commands.CheckFailure(message=F"You are blacklisted: {reason}")
+    raise commands.CheckFailure(message=F"You are blacklisted: {reason['reason']}")
 
 bot.openrobot = openrobot.api_wrapper.AsyncClient(token=os.getenv("OPENROBOT"))
 
-bot.loop.run_until_complete(create_pool_postgres())
+bot.loop.run_until_complete(create_client_mongodb())
 bot.loop.create_task(create_session_aiohttp())
 bot.loop.create_task(create_node_pomice())
 bot.run(os.getenv("TOKEN"))

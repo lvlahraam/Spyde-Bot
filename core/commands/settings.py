@@ -23,18 +23,18 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 if prefix == self.bot.prefixes[ctx.guild.id]:
                     pfmbed.title = "Prefix is the same"
                 else:
-                    data = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+                    data = await self.bot.mongodb.prefixes.find_one({"guild_id": ctx.guild.id})
                     if not data:
-                        await self.bot.postgres.execute("INSERT INTO prefixes(guild_name,guild_id,prefix) VALUES($1,$2,$3)", ctx.guild.name, ctx.guild.id, prefix)
+                        await self.bot.mongodb.prefixes.insert_one(await self.bot.mongodb.prefixes.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "prefix": prefix}))
                     else:
-                        await self.bot.postgres.fetch("UPDATE prefixes SET prefix=$1 WHERE guild_id=$2", prefix, ctx.guild.id)
+                        await self.bot.mongodb.prefixes.update_one({"guild_id": ctx.guild.id}, {"$set": {"prefix": prefix}})
                     self.bot.prefixes[ctx.guild.id] = prefix
                     pfmbed.title = "Changed prefix:"
         elif options == "reset":
             pfmbed.description = self.bot.default_prefix
-            data = await self.bot.postgres.fetchval("SELECT prefix FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+            data = await self.bot.mongodb.prefixes.find_one({"guild_id": ctx.guild.id})
             if data:
-                await self.bot.postgres.execute("DELETE FROM prefixes WHERE guild_id=$1", ctx.guild.id)
+                await self.bot.mongodb.prefixes.delete_one({"guild_id": ctx.guild.id})
                 pfmbed.title = "Resetted to:"
                 self.bot.prefixes[ctx.guild.id] = self.bot.default_prefix
             else:
@@ -54,22 +54,22 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             timestamp=ctx.message.created_at
         )
         welmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        welcome = await self.bot.postgres.fetchval("SELECT * FROM welcome WHERE guild_id=$1", ctx.guild.id)
+        welcome = await self.bot.mongodb.welcome.find_one({"guild_id": ctx.guild.id})
         if option == "toggle":
             if not welcome:
                 welmbed.title = "Welcome has been turned on"
-                await self.bot.postgres.execute("INSERT INTO welcome(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, "Welcome to .guild .member", ctx.guild.system_channel.id)
+                await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Welcome to .guild .member", "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
             else:
                 welmbed.title = "Welcome has been turned off"
-                await self.bot.postgres.execute("DELETE FROM welcome WHERE guild_id=$1", ctx.guild.id)
+                await self.bot.mongodb.welcome.delete_one({"guild_id": ctx.guild.id})
         elif option == "channel":
             if type(value) == discord.TextChannel:
                 welmbed.title = "Welcome channel has been changed to:"
                 welmbed.description = value.mention
                 if not welcome:
-                    await self.bot.postgres.execute("INSERT INTO welcome(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, "Welcome .member to here .guild", value.id)
+                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Welcome to .guild .member", "channel": value.id})
                 else:
-                    await self.bot.postgres.execute("UPDATE welcome SET ch=$1 WHERE guild_id=$2", value.id, ctx.guild.id)
+                    await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"channel": value.id}})
             else:
                 welmbed.title = "You need to pass a text channel"
         elif option == "message":
@@ -77,19 +77,19 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 welmbed.title = "Welcome message has been changed to:"
                 welmbed.description = value
                 if not welcome:
-                    await self.bot.postgres.execute("INSERT INTO welcome(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, value, ctx.guild.system_channel.id)
+                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
                 else:
-                    await self.bot.postgres.execute("UPDATE welcome SET msg=$1 WHERE guild_id=$2", value, ctx.guild.id)
+                    await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
                 welmbed.title = "You need to pass a string"
         elif option == "show":
             if not welcome:
                 welmbed.title = "Welcome is turned off"
             else:
-                msg = await self.bot.postgres.fetchval("SELECT msg FROM welcome WHERE guild_id=$1", ctx.guild.id)
-                ch = discord.utils.get(ctx.guild.text_channels, id=(await self.bot.postgres.fetchval("SELECT ch FROM welcome WHERE guild_id=$1", ctx.guild.id)))
+                wel = await self.bot.mongodb.welcome.find_one({"guild_id": ctx.guild.id})
+                ch = discord.utils.get(ctx.guild.text_channels, id=wel["channel"])
                 welmbed.title = "Status for welcome"
-                welmbed.description = F"Turned On\n{msg}\n{ch.mention}"
+                welmbed.description = F"Turned On\n{wel['message']}\n{ch.mention}"
         await ctx.reply(embed=welmbed)
     
     # Goodbye
@@ -101,22 +101,22 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             timestamp=ctx.message.created_at
         )
         byembed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        goodbye = await self.bot.postgres.fetchval("SELECT * FROM goodbye WHERE guild_id=$1", ctx.guild.id)
+        goodbye = await self.bot.mongodb.goodbye.find_one({"guild_id": ctx.guild.id})
         if option == "toggle":
             if not goodbye:
                 byembed.title = "Goodbye has been turned on"
-                await self.bot.postgres.execute("INSERT INTO goodbye(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, "Thank you .member for being here", ctx.guild.system_channel.id)
+                await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Thank you .member for being here .guild", "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
             else:
                 byembed.title = "Goodbye has been turned off"
-                await self.bot.postgres.execute("DELETE FROM goodbye WHERE guild_id=$1", ctx.guild.id)
+                await self.bot.mongodb.goodbye.delete_one({"guild_id": ctx.guild.id})
         elif option == "channel":
             if type(value) == discord.TextChannel:
                 byembed.title = "Goodbye channel has been changed to:"
                 byembed.description = value.mention
                 if not goodbye:
-                    await self.bot.postgres.execute("INSERT INTO goodbye(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, "Thank you .member for being here", value.id)
+                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Thank you .member for being here", "channel": value.id})
                 else:
-                    await self.bot.postgres.execute("UPDATE goodbye SET ch=$1 WHERE guild_id=$2", value.id, ctx.guild.id)
+                    await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"channel": value.id}})
             else:
                 byembed.title = "You need to pass a text channel"
         elif option == "message":
@@ -124,19 +124,19 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 byembed.title = "Goodbye message has been changed to:"
                 byembed.description = value
                 if not goodbye:
-                    await self.bot.postgres.execute("INSERT INTO goodbye(guild_name,guild_id,msg,ch) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, value, ctx.guild.system_channel.id)
+                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
                 else:
-                    await self.bot.postgres.execute("UPDATE goodbye SET msg=$1 WHERE guild_id=$2", value, ctx.guild.id)
+                    await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
                 byembed.title = "You need to pass a string"
         elif option == "show":
             if not goodbye:
                 byembed.title = "Goodbye is turned off"
             else:
-                msg = await self.bot.postgres.fetchval("SELECT msg FROM goodbye WHERE guild_id=$1", ctx.guild.id)
-                ch = discord.utils.get(ctx.guild.text_channels, id=(await self.bot.postgres.fetchval("SELECT ch FROM goodbye WHERE guild_id=$1", ctx.guild.id)))
+                bye = await self.bot.mongodb.goodbye.find_one({"guild_id": ctx.guild.id})
+                ch = discord.utils.get(ctx.guild.text_channels, id=bye["channel"])
                 byembed.title = "Status for Goodbye"
-                byembed.description = F"Turned On\n{msg}\n{ch.mention}"
+                byembed.description = F"Turned On\n{bye['message']}\n{ch.mention}"
         await ctx.reply(embed=byembed)
 
     # Ticket
@@ -144,7 +144,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     @commands.guild_only()
     @commands.has_guild_permissions(administrator=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
-    async def ticket(self, ctx:commands.Context, option:typing.Literal["on", "off", "status", "view"]):
+    async def ticket(self, ctx:commands.Context, option:typing.Literal["on", "off", "status", "button", "category"], *, value:discord.CategoryChannel=commands.Option(description="The category you want to set", default=None)):
         tkmbed = discord.Embed(
             color=self.bot.color,
             title="📮 Ticketer",
@@ -156,43 +156,50 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             title="📮 Ticketer",
             description=F"Use the button to open a ticket",
         )
-        num = await self.bot.postgres.fetchval("SELECT num FROM tickets WHERE guild_id = $1", ctx.guild.id)
+        number = await self.bot.mongodb.tickets.find_one({"guild_id": ctx.guild.id})
         if option == "on":
-            if num:
+            if number:
                 tkmbed.title += " is already turned on"
-                return await ctx.reply(embed=tkmbed)
-            cag = await ctx.guild.create_category("Tickets")
-            await self.bot.postgres.execute("INSERT INTO tickets(guild_name,guild_id,cag,num) VALUES($1,$2,$3,$4)", ctx.guild.name, ctx.guild.id, cag.id, 1)
-            ch = await cag.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"Opening a ticket")
-            await ch.set_permissions(ctx.guild.default_role, send_messages=False)
-            tkmbed.title += " has been turned on"
-            tkmbed.description = F"Tickets are now created in {cag.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command `.ticket Off` to turn off the ticketer\nYou can see the status of the ticketer with `.ticket Status`"
-            await ch.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
-            return await ctx.reply(embed=tkmbed)
+            else:
+                category = await ctx.guild.create_category("Tickets")
+                await self.bot.mongodb.tickets.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "category": category.id, "number": 1})
+                ch = await category.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"Opening a ticket")
+                await ch.set_permissions(ctx.guild.default_role, send_messages=False)
+                tkmbed.title += " has been turned on"
+                tkmbed.description = F"Tickets are now created in {category.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command `.ticket Off` to turn off the ticketer\nYou can see the status of the ticketer with `.ticket Status`"
+                await ch.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
         elif option == "off":
-            if not num:
+            if not number:
                 tkmbed.title += " is already turned off"
-                return await ctx.reply(embed=tkmbed)
-            await self.bot.postgres.execute("DELETE FROM tickets WHERE guild_id=$1", ctx.guild.id)
-            tkmbed.title += " has been turned off"
-            tkmbed.description = "You can Delete the categor(y/ies) and channel(s)"
-            return await ctx.reply(embed=tkmbed)
+            else:
+                await self.bot.mongodb.tickets.delete_one({"guild_id": ctx.guild.id})
+                tkmbed.title += " has been turned off"
+                tkmbed.description = "You can Delete the categor(y/ies) and channel(s)"
         elif option == "status":
-            if not num:
+            if not number:
                 tkmbed.title += " is turned off"
-                return await ctx.reply(embed=tkmbed)
-            cag = await self.bot.postgres.fetchval("SELECT cag FROM tickets WHERE guild_id = $1", ctx.guild.id)
-            category = self.bot.get_channel(cag)
-            tkmbed.title += " is turned on"
-            tkmbed.description = F"Tickets are now created in the {category.mention} cateogry"
-            return await ctx.reply(embed=tkmbed)
-        elif option == "view":
-            if not num:
+            else:
+                mongo = await self.bot.mongodb.tickets.find_one({"guild_id": ctx.guild.id})
+                category = self.bot.get_channel(mongo["category"])
+                tkmbed.title += " is turned on"
+                tkmbed.description = F"Tickets are now created in the {category.mention} cateogry"
+        elif option == "button":
+            if not number:
                 tkmbed.title += " is turned off"
-                return await ctx.reply(embed=tkmbed)
-            tkmbed.title += " message has been sent"
-            await ctx.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
-            return await ctx.reply(embed=tkmbed)
+            else:
+                tkmbed.title += " message has been sent"
+                await ctx.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
+        elif option == "category":
+            if value:
+                tkmbed.title += " category has been set"
+                tkmbed.description = F"Tickets are now created in {value.mention} cateogry"
+                if number:
+                    await self.bot.mongodb.tickets.update_one({"guild_id": ctx.guild.id}, {"$set": {"category": value}})
+                else:
+                    await self.bot.mongodb.tickets.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "category": value.id, "number": 1})
+            else:
+                tkmbed.title += " you must pass a category for value"
+        await ctx.reply(embed=tkmbed)
 
     # Leave
     @commands.command(name="leave", aliases=["lv"], help="Makes the bot leave")
@@ -208,7 +215,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         await view.wait()
         if view.value:
             lvmbed.title = F"{self.bot.user} has left"
-            await ctx.reply(embed=lvmbed, delete_after=2.5)
+            await ctx.reply(embed=lvmbed)
             await ctx.me.guild.leave()
 
 def setup(bot):

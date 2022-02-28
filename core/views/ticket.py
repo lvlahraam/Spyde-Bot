@@ -31,8 +31,9 @@ class TicketView(discord.ui.View):
 
     @discord.ui.button(emoji="🔓", style=discord.ButtonStyle.blurple, custom_id="persistent_ticket:blurple")
     async def open(self, button:discord.ui.Button, interaction:discord.Interaction):
-        cag = await self.bot.postgres.fetchval("SELECT cag FROM tickets WHERE guild_id = $1", interaction.guild.id)
-        num = await self.bot.postgres.fetchval("SELECT num FROM tickets WHERE guild_id = $1", interaction.guild.id)
+        ticket = await self.bot.mongodb.tickets.find_one({"guild_id": interaction.channel.guild.id})
+        cag = ticket["category"]
+        num = ticket["number"]
         category = interaction.guild.get_channel(cag)
         if not category:
             category = await interaction.guild.create_category("Tickets")
@@ -46,7 +47,7 @@ class TicketView(discord.ui.View):
             timestamp=interaction.message.created_at,
         )
         tkopenmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
-        await self.bot.postgres.execute("UPDATE tickets SET num = $1 WHERE guild_id = $2", num+1, interaction.guild.id)
+        await self.bot.mongodb.tickets.find_one_and_update({"guild_id": interaction.channel.guild.id}, {"$inc": {"number": num+1}}, upsert=True)
         await interaction.response.send_message(content=F"Your ticket has been opened in {channel.mention}", ephemeral=True)
         await interaction.channel.set_permissions(interaction.user, view_channel=False)
         await channel.send(embed=tkopenmbed, view=CloseTicketView(self.bot, interaction.user, interaction.channel), allowed_mentions=discord.AllowedMentions.all())
