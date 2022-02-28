@@ -53,7 +53,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             timestamp=ctx.message.created_at
         ) 
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id})
+        notes = self.bot.mongodb.notes.find({"user_id": ctx.author.id})
         if option == "add":
             if type(value) == str:
                 note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
