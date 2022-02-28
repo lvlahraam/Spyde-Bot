@@ -21,7 +21,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         else:
             cambed.title = "Account already exists!"
             cambed.description = F"Balance is: {balance['balance']}"
-        cambed += "\nYou can use other commands to gain money!"
+        cambed.description += "\nYou can gain money by using other commands!"
         await ctx.reply(embed=cambed)
 
     # GiveMoney
