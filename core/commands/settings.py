@@ -58,7 +58,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         if option == "toggle":
             if not welcome:
                 welmbed.title = "Welcome has been turned on"
-                await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Welcome to .guild .member", "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
+                await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Welcome to .guild .member", "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
             else:
                 welmbed.title = "Welcome has been turned off"
                 await self.bot.mongodb.welcome.delete_one({"guild_id": ctx.guild.id})
@@ -77,7 +77,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 welmbed.title = "Welcome message has been changed to:"
                 welmbed.description = value
                 if not welcome:
-                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
+                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
                 else:
                     await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
@@ -105,7 +105,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         if option == "toggle":
             if not goodbye:
                 byembed.title = "Goodbye has been turned on"
-                await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Thank you .member for being here .guild", "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
+                await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Thank you .member for being here .guild", "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
             else:
                 byembed.title = "Goodbye has been turned off"
                 await self.bot.mongodb.goodbye.delete_one({"guild_id": ctx.guild.id})
@@ -124,7 +124,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 byembed.title = "Goodbye message has been changed to:"
                 byembed.description = value
                 if not goodbye:
-                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id or ctx.guild.text_channels[0].id})
+                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
                 else:
                     await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
             else:
