@@ -1,6 +1,6 @@
 ## Information About Spyde
 
-![Banner](https://github.com/lvlahraam/Spyde-Bot/blob/main/core/images/purple_semi_banner.jpg?raw=true)
+![Banner](https://github.com/lvlahraam/Spyde-Bot/blob/main/core/images/red_semi_banner.jpg?raw=true)
 
 ***Who made this?***
 This is a Discord Bot made by Me aka Mahraam#5124 on discord.
@@ -37,6 +37,6 @@ And you can get the status for welcomer with `welcome status` command,
 These goes for goodbyer as well,
 `goodbye toggle` and `goodbye message <message>` and `goodbye channel <channel>` and `goodbye status`.
 
-![Commands](https://cdn.discordapp.com/attachments/902897998164525066/947953173996400650/unknown.png)
+![Commands](https://cdn.discordapp.com/attachments/902897998164525066/947956746071212042/unknown.png)
 
 *We are going to make a dashboard for this bot, so if you want to contribute in the dashboard-development please DM me on discord @ `lvlahraam#5124`*
