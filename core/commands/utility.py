@@ -47,13 +47,13 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
 
     # Notes
     @commands.command(name="notes", aliases=["nt"], help="Taking notes with this")
-    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use", default=None), *, value:typing.Union[str, int]=commands.Option(description="The value you want to use", default=None)):
+    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use"), *, value:typing.Union[str, int]=commands.Option(description="The value you want to use", default=None)):
         ntmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
         ) 
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        notes = self.bot.mongodb.notes.find({"user_id": ctx.author.id})
+        notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id}).to_list(length=100)
         if option == "add":
             if type(value) == str:
                 note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})

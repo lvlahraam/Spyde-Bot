@@ -146,7 +146,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
                 timestamp=ctx.message.created_at
             )
             blacklistsmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-            blacklisted = self.bot.mongodb.blacklist.find()
+            blacklisted = await self.bot.mongodb.blacklist.find().to_list(length=100)
             if not blacklisted:
                 blacklistsmbed.title = "Nobody is in Blacklist"
             else:
