@@ -57,8 +57,6 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         bumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if option == "create":
             backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=None)
-            print("TO LIST", backups)
-            print("AMOUNT", len(backups))
             if len(backups) <= 25:
                 view = confirm.ViewConfirm(ctx)
                 view.message = await ctx.reply(content="Are you sure if you want to create a backup for this server?", view=view)
@@ -200,7 +198,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             timestamp=ctx.message.created_at
         ) 
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id}).to_list(length=100)
+        notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id}).to_list(length=None)
         if option == "add":
             note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
             ntmbed.description = value
@@ -214,7 +212,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 ntmbed.title = "You don't have any note"
             else:
                 ntmbed.description = value
-                note = await self.bot.mongodb.find_one({"user_id": ctx.author.id, "task": value})
+                note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
                 if note:
                     ntmbed.title = "Removed the task from your notes:"
                     await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "task": value})
@@ -228,7 +226,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 view.message = await ctx.reply(content="Are you sure if you want to clear everything:", view=view)
                 await view.wait()
                 if view.value:
-                    await self.bot.mongodb.delete_many({"user_id": ctx.author.id})
+                    await self.bot.mongodb.notes.delete_many({"user_id": ctx.author.id})
                     ntmbed.title = "Cleared your notes!"
         elif option == "show":
             if not notes: 

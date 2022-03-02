@@ -154,7 +154,7 @@ class Owner(commands.Cog, description="Only my Developer can use these!"):
         )
         blmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not user:
-            blacklists = await self.bot.mongodb.blacklist.find().to_list(length=100)
+            blacklists = await self.bot.mongodb.blacklist.find().to_list(length=None)
             if not blacklists:
                 blmbed.title = "Nobody is in Blacklist"
             else:

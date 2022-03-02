@@ -39,7 +39,7 @@ async def create_node_pomice():
     bot.pomice = pomice.NodePool()
     spotify_id = os.getenv("SPOTIFY_ID")
     spotify_secret = os.getenv("SPOTIFY_SECRET")
-    await bot.pomice.create_node(bot=bot, host="lava.link", port="80", password="mom", identifier="node1lava.link", spotify_client_id=spotify_id, spotify_client_secret=spotify_secret)
+    await bot.pomice.create_node(bot=bot, host="usa.lavalink.mitask.tech", port="2333", password="lvserver", identifier="US Lavalink", spotify_client_id=spotify_id, spotify_client_secret=spotify_secret)
     print("Created a Pomice Node(s)")
 
 class SpydeBase(commands.AutoShardedBot):
