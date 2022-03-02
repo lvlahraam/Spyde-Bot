@@ -68,10 +68,10 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                     message = await ctx.reply(embed=bumbed)
                     channels = []
                     for channel in ctx.guild.channels:
-                        channel.append(channels)
+                        channels.append(channel)
                     roles = []
                     for role in ctx.guild.roles:
-                        role.append(roles)
+                        roles.append(role)
                     emojis = []
                     for emoji in ctx.guild.emojis:
                         emojis.append(emoji)
