@@ -56,7 +56,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         )
         bumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if option == "create":
-            backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=25)
+            backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=100)
             if len(backups) > 25:
                 view = confirm.ViewConfirm(ctx)
                 view.message = await ctx.reply(content="Are you sure if you want to create a backup for this server?", view=view)
@@ -130,11 +130,15 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             else:
                 bumbed = "You must pass an name"
         elif option == "list":
-            bumbed.title = "Backups"
-            bumbed.description = "```"
-            for backup in await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=100):
-                bumbed.description += F"{backup['guild_name']} / [{backup['name']}] - {discord.utils.format_dt(backup['time'], style='f')} ({discord.utils.format_dt(backup['time'], style='R')})\n"
-            bumbed.description += "```"
+            backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=100)
+            if len(backups) > 0:
+                bumbed.title = "Backups"
+                bumbed.description = "```"
+                for backup in :
+                    bumbed.description += F"{backup['guild_name']} / [{backup['name']}] - {discord.utils.format_dt(backup['time'], style='f')} ({discord.utils.format_dt(backup['time'], style='R')})\n"
+                bumbed.description += "```"
+            else:
+                bumbed = "You don't have any backups"
         elif option == "load":
             if value:
                 backup = await self.bot.mongodb.backups.find_one({"name": value, "user_id": ctx.author.id})
