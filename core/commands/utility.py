@@ -1,6 +1,6 @@
-import discord, asyncio, typing
+import discord, asyncio, typing, string, random
 from discord.ext import commands
-from core.views import confirm
+from core.views import confirm, pagination
 
 class Utility(commands.Cog, description="Useful stuff that are open to everyone"):
     def __init__(self, bot):
@@ -44,10 +44,62 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             afkmbed.description = F"Reason: **{afk['reason']}**"
             await ctx.reply(embed=afkmbed)
 
+    # Backup
+    @commands.command(name="backup", aliases=["bu"], help="Backing-up data with this")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    async def backup(self, ctx:commands.Context, option:typing.Literal["create", "delete", "list"]=commands.Option(description="The option you want to use"), *, value:str=commands.Option(description="The value you want to use", default=None)):
+        bumbed = discord.Embed(
+            color=self.bot.color,
+            timestamp=ctx.message.created_at
+        )
+        bumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if option == "create":
+            view = confirm.ViewConfirm(ctx)
+            view.message = await ctx.reply(content="Are you sure if you want to create a backup for this server?", view=view)
+            await view.wait()
+            if view.value:
+                bumbed.title = "Creating backup..."
+                message = await ctx.reply(embed=bumbed)
+                channels = []
+                for channel in ctx.guild.channels:
+                    channels.append(channel)
+                roles = []
+                for role in ctx.guild.roles:
+                    roles.append(role)
+                emojis = []
+                for emoji in ctx.guild.emojis:
+                    emojis.append(emoji)
+                stickers = []
+                for sticker in ctx.guild.stickers:
+                    stickers.append(sticker)
+                name = "".join(random.choice(F"{string.ascii_uppercase}{string.digits}") for _ in range(10))
+                await self.bot.mongodb.backups.insert_one({"name": name, "user_name": ctx.author, "user_id": ctx.author.id, "guild_name": ctx.guild, "guild_id": ctx.guild.id, "channels": channels, "roles": roles, "emojis": emojis, "stickers": stickers, "icon": ctx.guild.icon, "banner": ctx.guild.banner, "time": discord.utils.utcnow()})
+                bumbed.title = "Backup has been created..."
+                bumbed.description = F"Under the name of **{name}**"
+        elif option == "delete":
+            if value:
+                backup = await self.bot.mongodb.backups.find_one({"name": value, "user_id": ctx.author.id})
+                if backup:
+                    bumbed.title = F"Backup Info - {backup['guild_name']} / [{backup['name']}]"
+                    bumbed.description = F"{discord.utils.format_dt(backup['time'], style='F')} ({discord.utils.format_dt(backup['time'], style='R')})"
+                    bumbed.add_field(name="Channels:", value="\n".join(f'{channel.name}' for channel in backup['channels']))
+                    bumbed.add_field(name="Roles:", value="\n".join(f'{role.name}' for role in backup['roles']))
+                    view = confirm.ViewConfirm(ctx)
+                    view.message = await ctx.reply(content="Are you sure if you want to delete this backup?", embed=bumbed, view=view)
+                    await view.wait()
+                    if view.value:
+                        await self.bot.mongodb.backups.delete_one({"name": backup['name'], "user_id": backup['user_id']})
+                        bumbed.title = "Backup has been deleted"
+                else:
+                    bumbed = "Couldn't find any backup with this name"
+            else:
+                bumbed = "You must pass an name"
 
     # Notes
     @commands.command(name="notes", aliases=["nt"], help="Taking notes with this")
-    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The options you want to use"), *, value:str=commands.Option(description="The value you want to use", default=None)):
+    async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The option you want to use"), *, value:str=commands.Option(description="The value you want to use", default=None)):
         ntmbed = discord.Embed(
             color=self.bot.color,
             timestamp=ctx.message.created_at
