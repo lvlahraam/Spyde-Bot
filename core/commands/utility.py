@@ -134,7 +134,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             if len(backups) > 0:
                 bumbed.title = "Backups"
                 bumbed.description = "```"
-                for backup in :
+                for backup in backups:
                     bumbed.description += F"{backup['guild_name']} / [{backup['name']}] - {discord.utils.format_dt(backup['time'], style='f')} ({discord.utils.format_dt(backup['time'], style='R')})\n"
                 bumbed.description += "```"
             else:
