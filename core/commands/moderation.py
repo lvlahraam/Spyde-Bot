@@ -1,4 +1,4 @@
-import discord, typing
+import discord, typing, asyncio
 from discord.ext import commands
 
 class Moderation(commands.Cog, description="Was someone being bad?"):
@@ -224,11 +224,12 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         pumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if amount > 100:
             pumbed.title = "Can't clear more than 100 messages"
-            return await ctx.reply(embed=pumbed, delete_after=5)
-        deleted = await ctx.channel.purge(limit=amount)
-        pumbed.title = F"Deleted {len(deleted)} amount of messages"
+        else:
+            deleted = await ctx.channel.purge(limit=amount, check=lambda m: m.id != ctx.message.id)
+            pumbed.title = F"Deleted {len(deleted)} amount of messages"
+            await asyncio.sleep(5)
+            await ctx.message.delete(delay=2.5)
         await ctx.reply(embed=pumbed, delete_after=5)
-        await ctx.message.delete(delay=2.5)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
