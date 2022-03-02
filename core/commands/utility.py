@@ -66,8 +66,20 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 if view.value:
                     bumbed.title = "Creating backup..."
                     message = await ctx.reply(embed=bumbed)
+                    channels = []
+                    for channel in ctx.guild.channels:
+                        channel.append(channels)
+                    roles = []
+                    for role in ctx.guild.roles:
+                        role.append(roles)
+                    emojis = []
+                    for emoji in ctx.guild.emojis:
+                        emojis.append(emoji)
+                    stickers = []
+                    for sticker in ctx.guild.stickers:
+                        stickers.append(sticker)
                     name = "".join(random.choice(F"{string.ascii_uppercase}{string.digits}") for _ in range(10))
-                    await self.bot.mongodb.backups.insert_one({"name": name, "user_name": ctx.author.name, "user_id": ctx.author.id, "guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "channels": ctx.guild.channels, "roles": ctx.guild.roles, "emojis": ctx.guild.emojis, "stickers": ctx.guild.stickers, "icon": ctx.guild.icon.url if ctx.guild.icon else None, "banner": ctx.guild.banner.url if ctx.guild.banner else None, "time": discord.utils.utcnow()})
+                    await self.bot.mongodb.backups.insert_one({"name": name, "user_name": ctx.author.name, "user_id": ctx.author.id, "guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "channels": channels, "roles": roles, "emojis": emojis, "stickers": stickers, "icon": ctx.guild.icon.url if ctx.guild.icon else None, "banner": ctx.guild.banner.url if ctx.guild.banner else None, "time": discord.utils.utcnow()})
                     bumbed.title = "Backup has been created..."
                     bumbed.description = F"Under the name of **{name}**"
                     await message.delete()
