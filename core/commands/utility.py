@@ -59,7 +59,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=None)
             print("TO LIST", backups)
             print("AMOUNT", len(backups))
-            if len(backups) > 25:
+            if not len(backups) <= 25:
                 view = confirm.ViewConfirm(ctx)
                 view.message = await ctx.reply(content="Are you sure if you want to create a backup for this server?", view=view)
                 await view.wait()
@@ -82,6 +82,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                     await self.bot.mongodb.backups.insert_one({"name": name, "user_name": ctx.author.name, "user_id": ctx.author.id, "guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "channels": channels, "roles": roles, "emojis": emojis, "stickers": stickers, "icon": ctx.guild.icon.url if ctx.guild.icon else None, "banner": ctx.guild.banner.url if ctx.guild.banner else None, "time": discord.utils.utcnow()})
                     bumbed.title = "Backup has been created..."
                     bumbed.description = F"Under the name of **{name}**"
+                    await message.delete()
             bumbed.title = "You can't create more than 25 backups"
         elif option == "delete":
             if value:
@@ -132,7 +133,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             else:
                 bumbed.title = "You must pass an name"
         elif option == "list":
-            backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=100)
+            backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=None)
             if len(backups) > 0:
                 bumbed.title = "Backups"
                 bumbed.description = "```"
