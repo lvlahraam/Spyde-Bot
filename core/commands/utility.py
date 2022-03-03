@@ -8,15 +8,15 @@ class CalculatorButton(discord.ui.Button):
         self.math = view.math
         self.embed = view.embed
         self.options = {
-        "8": "8",
-        "9": "9",
-        "4": "4",
-        "5": "5",
-        "6": "6",
-        "1": "1",
-        "2": "2",
-        "3": "3",
-        "0": "0"
+            "8": "8",
+            "9": "9",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "0": "0"
         }
 
     async def callback(self, interaction:discord.Interaction):
@@ -55,13 +55,15 @@ class CalculatorView(discord.ui.View):
     @discord.ui.button(label="=", style=discord.ButtonStyle.green, row=4, disabled=True)
     async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
+        self.reset.disabled = True
         result = expr.evaluate(self.math)
         self.embed.description += F"\nResult: {result}"
         await interaction.response.edit_message(embed=self.embed, view=button.view)
 
     @discord.ui.button(label="#", style=discord.ButtonStyle.red, row=4, disabled=True)
     async def reset(self, button:discord.ui.Button, interaction:discord.Interaction):
-        self.disabled = True
+        button.disabled = True
+        self.equal.disabled = True
         self.math = ""
         self.embed.description = "Enter more numbers..."
         await interaction.response.edit_message(embed=self.embed, view=button.view)
