@@ -10,7 +10,7 @@ class DeleteView(discord.ui.View):
         await interaction.message.delete()
     
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id != self.ctx.message.author.id:
+        if interaction.user.id != self.ctx.author.id:
             icheckmbed = discord.Embed(
                 color=self.ctx.bot.color,
                 title=F"You can't use this",

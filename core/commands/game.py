@@ -54,7 +54,7 @@ class RPSView(discord.ui.View):
         self.add_item(item=RPSButtons(emoji="🧻", label="Paper", style=discord.ButtonStyle.red, view=self))
         self.add_item(item=RPSButtons(emoji="✂️", label="Scissors", style=discord.ButtonStyle.blurple, view=self))
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.ctx.message.author.id:
+        if interaction.user.id == self.ctx.author.id:
             return True
         else:
             icheckmbed = discord.Embed(
@@ -104,7 +104,7 @@ class CFView(discord.ui.View):
         self.add_item(item=CFButtons(emoji="💀", label="Heads", style=discord.ButtonStyle.red, view=self))
         self.add_item(item=CFButtons(emoji="⚡", label="Tails", style=discord.ButtonStyle.green, view=self)) 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.ctx.message.author.id:
+        if interaction.user.id == self.ctx.author.id:
             return True
         else:
             icheckmbed = discord.Embed(
@@ -155,7 +155,7 @@ class GuessView(discord.ui.View):
         for _ in range(1, 5):
             self.add_item(item=GuessButtons(label=_, style=discord.ButtonStyle.green, view=self))
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id == self.ctx.message.author.id:
+        if interaction.user.id == self.ctx.author.id:
             return True
         else:
             icheckmbed = discord.Embed(

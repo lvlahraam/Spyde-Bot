@@ -2,6 +2,89 @@ import discord, asyncio, typing, string, random
 from discord.ext import commands
 from core.views import confirm, pagination
 
+import discord, expr
+
+class CalculatorButton(discord.ui.Button):
+    def __init__(self, view, **kwargs):
+        self.embed = view.embed
+        self.options = {
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "/": "/",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "*": "*",
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "-": "-",
+        "0": "0",
+        ".": ".",
+        "=": "=",
+        "+": "+"
+        }
+        self.math = ""
+
+    async def callback(self, interaction:discord.Interaction):
+        if self.label != "=" or self.label != "^":
+            equalbutton = discord.utils.get(self.view.children, custom_id="equalbutton")
+            equalbutton.disabled = False
+            resetbutton = discord.utils.get(self.view.children, custom_id="resetbutton")
+            resetbutton.disabled = False
+            option = self.option[self.label]
+            self.math += option
+            self.embed.description = self.math
+        if self.label == "=":
+            self.disabled = True
+            result = expr.evaluate(self.math)
+            self.embed.description += F"\nResult: {result}"
+        if self.label == "^":
+            self.disabled = True
+            self.math = ""
+            self.embed.description = "Enter more numbers..."
+        await interaction.response.edit_message(embed=self.embed, view=self.view)
+
+
+class CalculatorView(discord.ui.View):
+    def __init__(self, ctx, embed):
+        self.ctx = ctx
+        self.embed = embed
+        self.add_item(CalculatorButton(label="/", row=0, view=self))
+        self.add_item(CalculatorButton(label="*", row=0, view=self))
+        self.add_item(CalculatorButton(label="-", row=0, view=self))
+        self.add_item(CalculatorButton(label="+", row=0, view=self))
+        self.add_item(CalculatorButton(label="7", row=1, view=self))
+        self.add_item(CalculatorButton(label="8", row=1, view=self))
+        self.add_item(CalculatorButton(label="9", row=1, view=self))
+        self.add_item(CalculatorButton(label="%", row=1, view=self))
+        self.add_item(CalculatorButton(label="4", row=2, view=self))
+        self.add_item(CalculatorButton(label="5", row=2, view=self))
+        self.add_item(CalculatorButton(label="6", row=2, view=self))
+        self.add_item(CalculatorButton(label="(", row=2, view=self))
+        self.add_item(CalculatorButton(label="1", row=3, view=self))
+        self.add_item(CalculatorButton(label="2", row=3, view=self))
+        self.add_item(CalculatorButton(label="3", row=3, view=self))
+        self.add_item(CalculatorButton(label=")", row=3, view=self))
+        self.add_item(CalculatorButton(label="0", row=4, view=self))
+        self.add_item(CalculatorButton(label=".", row=4, view=self))
+        self.add_item(CalculatorButton(label="=", row=4, disabled=True, custom_id="equalbutton", view=self))
+        self.add_item(CalculatorButton(label="^", row=4, disabled=True, custom_id="resetbutton", view=self))
+
+    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
+        if interaction.user.id != self.ctx.author.id:
+            icheckmbed = discord.Embed(
+                color=self.ctx.bot.color,
+                title=F"You can't use this",
+                description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use this\nCause they did the command\nIf you want to use this, do what they did",
+                timestamp=interaction.message.created_at
+            )
+            icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
+            await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
+            return False
+        return True
+
 class Utility(commands.Cog, description="Useful stuff that are open to everyone"):
     def __init__(self, bot):
         self.bot = bot
@@ -16,6 +99,18 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         cumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.channel.purge(limit=amount, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.reply(embed=cumbed, delete_after=5)
+
+    # Calculator
+    @commands.command(name="calculator", aliases=["cal"], help="Calculates the given equation")
+    async def calculator(self, ctx:commands.Context):
+        calmbed = discord.Embed(
+            color=self.bot.color,
+            title="Calculator",
+            timestamp=ctx.message.created_at
+        )
+        calmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        view = CalculatorView(ctx, calmbed)
+        await ctx.reply(embed=calmbed, view=view)
 
     # Remind
     @commands.command(name="remind", aliases=["rm"], help="Reminds you with the given task and seconds")

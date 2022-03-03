@@ -65,7 +65,7 @@ class ViewPagination(discord.ui.View):
         return await interaction.response.send_message(embed=self.pages[0], view=self, ephemeral=True) if interaction else await self.ctx.reply(embed=self.pages[0], view=self) 
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id != self.ctx.message.author.id:
+        if interaction.user.id != self.ctx.author.id:
             icheckmbed = discord.Embed(
                 color=self.ctx.bot.color,
                 title=F"You can't use this",
