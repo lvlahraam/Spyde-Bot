@@ -1,57 +1,40 @@
-import discord, asyncio, typing, string, random
+import discord, expr, asyncio, typing, string, random
 from discord.ext import commands
 from core.views import confirm, pagination
 
-import discord, expr
-
 class CalculatorButton(discord.ui.Button):
     def __init__(self, view, **kwargs):
-        self.mainview = view
+        super().__init__(**kwargs)
+        self.math = view.math
         self.embed = view.embed
         self.options = {
-        "7": "7",
         "8": "8",
         "9": "9",
-        "/": "/",
         "4": "4",
         "5": "5",
         "6": "6",
-        "*": "*",
         "1": "1",
         "2": "2",
         "3": "3",
-        "-": "-",
-        "0": "0",
-        ".": ".",
-        "=": "=",
-        "+": "+"
+        "0": "0"
         }
-        self.math = ""
 
     async def callback(self, interaction:discord.Interaction):
         if self.label != "=" or self.label != "#":
-            equalbutton = discord.utils.get(self.mainview.children, custom_id="equalbutton")
-            equalbutton.disabled = False
-            resetbutton = discord.utils.get(self.mainview.children, custom_id="resetbutton")
-            resetbutton.disabled = False
+            self.view.equal.disabled = False
+            self.view.reset.disabled = False
             option = self.option[self.label]
             self.math += option
             self.embed.description = self.math
-        if self.label == "=":
-            self.disabled = True
-            result = expr.evaluate(self.math)
-            self.embed.description += F"\nResult: {result}"
-        if self.label == "#":
-            self.disabled = True
-            self.math = ""
-            self.embed.description = "Enter more numbers..."
         await interaction.response.edit_message(embed=self.embed, view=self.view)
 
 
 class CalculatorView(discord.ui.View):
     def __init__(self, ctx, embed):
+        super().__init__(timeout=None)
         self.ctx = ctx
         self.embed = embed
+        self.math = ""
         self.add_item(CalculatorButton(label="/", row=0, view=self))
         self.add_item(CalculatorButton(label="*", row=0, view=self))
         self.add_item(CalculatorButton(label="-", row=0, view=self))
@@ -72,6 +55,20 @@ class CalculatorView(discord.ui.View):
         self.add_item(CalculatorButton(label=".", row=4, view=self))
         self.add_item(CalculatorButton(label="=", row=4, disabled=True, custom_id="equalbutton", view=self))
         self.add_item(CalculatorButton(label="#", row=4, disabled=True, custom_id="resetbutton", view=self))
+
+    @discord.ui.button(label="=", row=4, disabled=4)
+    async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
+        button.disabled = True
+        result = expr.evaluate(self.math)
+        self.embed.description += F"\nResult: {result}"
+        await interaction.response.edit_message(embed=self.embed, view=button.view)
+
+    @discord.ui.button(label="#", row=4, disabled=4)
+    async def reset(self, button:discord.ui.Button, interaction:discord.Interaction):
+        self.disabled = True
+        self.math = ""
+        self.embed.description = "Enter more numbers..."
+        await interaction.response.edit_message(embed=self.embed, view=button.view)
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
