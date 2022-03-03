@@ -31,8 +31,8 @@ class OnDisconnect(commands.Cog):
     @commands.Cog.listener()
     async def on_disconnect(self):
         print(F"Disconnected as: {self.bot.user} - {self.bot.user.id}\nDisconnected from discord.")
-        if not self.session.closed:
-            await self.session.close()
+        if not self.bot.session.closed:
+            await self.bot.session.close()
 
 def setup(bot):
     bot.add_cog(OnConnect(bot))
