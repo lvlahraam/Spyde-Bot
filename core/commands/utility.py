@@ -54,14 +54,14 @@ class CalculatorView(discord.ui.View):
         self.add_item(CalculatorButton(label="0", row=4, view=self))
         self.add_item(CalculatorButton(label=".", row=4, view=self))
 
-    @discord.ui.button(label="=", row=4, disabled=4)
+    @discord.ui.button(label="=", row=4, disabled=True)
     async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
         result = expr.evaluate(self.math)
         self.embed.description += F"\nResult: {result}"
         await interaction.response.edit_message(embed=self.embed, view=button.view)
 
-    @discord.ui.button(label="#", row=4, disabled=4)
+    @discord.ui.button(label="#", row=4, disabled=True)
     async def reset(self, button:discord.ui.Button, interaction:discord.Interaction):
         self.disabled = True
         self.math = ""
