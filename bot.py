@@ -47,6 +47,8 @@ class SpydeBase(commands.AutoShardedBot):
         super().__init__(**kwargs)
         self.prefixes = {}
         self.default_prefix = ",s"
+        self.color = 0x2C333A
+        self.persistent_views_added = False
         self.afks = {}
         self._commands = []
         for command in sorted(os.listdir("./core/commands/")):
@@ -64,18 +66,11 @@ class SpydeBase(commands.AutoShardedBot):
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["GIT_DISCOVERY_ACROSS_FILESYSTEM"] = "True"
         self.get_command("jsk").hidden = True
-        self.persistent_views_added = False
 
     async def close(self):
         if not self.session.closed:
             await self.session.close()
         await super().close()
-
-    @property
-    def color(self):
-        colors = [0x2C333A, 0x5865F2, 0xF4E968]
-        color = random.choice(colors)
-        return color
 
     def trim(self, text: str, limit: int):
         text = text.strip()

@@ -222,8 +222,15 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             if not notes:
                 ntmbed.title = "You don't have any note"
             else:
+                tasks = []
+                counter = 0
+                for stuff in notes:
+                    tasks.append(F"[{counter}.]({stuff['jump_url']}) {stuff['task']}\n")
+                    counter += 1
+                ntmbed.title=F"{ctx.author.display_name}'s notes:"
+                ntmbed.description="".join(task for task in tasks)
                 view = confirm.ViewConfirm(ctx)
-                view.message = await ctx.reply(content="Are you sure if you want to clear everything:", view=view)
+                view.message = await ctx.reply(content="Are you sure if you want to clear everything:", embed=ntmbed, view=view)
                 await view.wait()
                 if view.value:
                     await self.bot.mongodb.notes.delete_many({"user_id": ctx.author.id})

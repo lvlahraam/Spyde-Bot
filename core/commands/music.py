@@ -303,21 +303,23 @@ class Music(commands.Cog, description="Jamming out with these!"):
             timestamp=ctx.message.created_at
         )
         dcmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        params = {
-            'title': ctx.voice_client.current.author,
-            'thumbnail_url': ctx.voice_client.current.thumbnail,
-            'seconds_played': ctx.voice_client.position/1000,
-            'total_seconds': ctx.voice_client.current.length/1000,
-            'line_1': ctx.voice_client.current.title,
-            'line_2': ctx.voice_client.current.requester.display_name
-        }
-        session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
-        response = io.BytesIO(await session.read())
-        dcmbed.set_image(url="attachment://player.png")
-        view = discord.ui.View()
-        view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
+        if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
+            params = {
+                'title': ctx.voice_client.current.author,
+                'thumbnail_url': ctx.voice_client.current.thumbnail,
+                'seconds_played': ctx.voice_client.position/1000,
+                'total_seconds': ctx.voice_client.current.length/1000,
+                'line_1': ctx.voice_client.current.title,
+                'line_2': ctx.voice_client.current.requester.display_name
+            }
+            session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+            response = io.BytesIO(await session.read())
+            dcmbed.set_image(url="attachment://player.png")
+            view = discord.ui.View()
+            view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
+            return await ctx.reply(embed=dcmbed, file=discord.File(fp=response, filename="player.png"))
         await ctx.voice_client.destroy()                    
-        return await ctx.reply(embed=dcmbed, file=discord.File(fp=response, filename="player.png"))
+        return await ctx.reply(embed=dcmbed)
 
     # Play
     @commands.command(name="play", aliases=["pl"], help="Plays music with the given query, the query can be a url or a title or a playlist")
@@ -350,8 +352,12 @@ class Music(commands.Cog, description="Jamming out with these!"):
             if not ctx.voice_client.is_playing:
                 return await ctx.voice_client.play(track=(await ctx.voice_client.queue.get()))
             else:
-                plmbed.title = "Playlist"
-                plmbed.description = F"Added {results if isinstance(results, pomice.Playlist) else results[0]} to the queue"
+                result = results if isinstance(results, pomice.Playlist) else results[0]
+                plmbed.title = "Playlist:"
+                plmbed.description = F"Added {result} to the queue"
+                plmbed.set_image(url=result.thumbnail)
+                view = discord.ui.View()
+                view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=result.uri))
                 return await ctx.reply(embed=plmbed)
         plmbed.description = F"Someone else is using to me in {ctx.me.voice.channel.mention}"
         return await ctx.reply(embed=plmbed)
@@ -673,15 +679,31 @@ class Music(commands.Cog, description="Jamming out with these!"):
         )
         volmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.voice_client.is_playing or ctx.voice_client.is_paused:
+            params = {
+                'title': ctx.voice_client.current.author,
+                'thumbnail_url': ctx.voice_client.current.thumbnail,
+                'seconds_played': ctx.voice_client.position/1000,
+                'total_seconds': ctx.voice_client.current.length/1000,
+                'line_1': ctx.voice_client.current.title,
+                'line_2': ctx.voice_client.current.requester.display_name
+            }
+            session = await self.bot.session.get("https://api.jeyy.xyz/discord/player", params=params)
+            response = io.BytesIO(await session.read())
+            volmbed.set_image(url="attachment://player.png")
+            view = discord.ui.View()
+            view.add_item(item=discord.ui.Button(emoji="🔗", label="URL", url=ctx.voice_client.current.uri))
             if volume:
-                if not volume < 0 or not volume > 500:
-                    await ctx.voice_client.set_volume(volume)
-                    volmbed.description = F"Volume has been changed to {volume}"
-                    return await ctx.reply(embed=volmbed)
-                volmbed.description = "The volume must be between 0 and 500"
-                return await ctx.reply(embed=volmbed)
+                if volume == ctx.voice_client.volume:
+                    if not volume < 0 or not volume > 500:
+                        await ctx.voice_client.set_volume(volume)
+                        volmbed.description = F"Volume has been changed to {volume}"
+                        return await ctx.reply(embed=volmbed, file=discord.File(response, filename="player.png"), view=view)
+                    volmbed.description = "The volume must be between 0 and 500"
+                    return await ctx.reply(embed=volmbed, file=discord.File(response, filename="player.png"), view=view)
+                volmbed.description = F"The volume is already at {ctx.voice_client.volume}"
+                return await ctx.reply(embed=volmbed, file=discord.File(response, filename="player.png"), view=view)
             volmbed.description = F"The volume is currently at {ctx.voice_client.volume}"
-            return await ctx.reply(embed=volmbed)
+            return await ctx.reply(embed=volmbed, file=discord.File(response, filename="player.png"), view=view)
         volmbed.description = "Nothing is playing"
         return await ctx.reply(embed=volmbed)
 
