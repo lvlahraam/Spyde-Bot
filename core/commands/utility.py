@@ -29,7 +29,7 @@ class CalculatorButton(discord.ui.Button):
         self.math = ""
 
     async def callback(self, interaction:discord.Interaction):
-        if self.label != "=" or self.label != "^":
+        if self.label != "=" or self.label != "#":
             equalbutton = discord.utils.get(self.mainview.children, custom_id="equalbutton")
             equalbutton.disabled = False
             resetbutton = discord.utils.get(self.mainview.children, custom_id="resetbutton")
@@ -41,7 +41,7 @@ class CalculatorButton(discord.ui.Button):
             self.disabled = True
             result = expr.evaluate(self.math)
             self.embed.description += F"\nResult: {result}"
-        if self.label == "^":
+        if self.label == "#":
             self.disabled = True
             self.math = ""
             self.embed.description = "Enter more numbers..."
@@ -71,7 +71,7 @@ class CalculatorView(discord.ui.View):
         self.add_item(CalculatorButton(label="0", row=4, view=self))
         self.add_item(CalculatorButton(label=".", row=4, view=self))
         self.add_item(CalculatorButton(label="=", row=4, disabled=True, custom_id="equalbutton", view=self))
-        self.add_item(CalculatorButton(label="^", row=4, disabled=True, custom_id="resetbutton", view=self))
+        self.add_item(CalculatorButton(label="#", row=4, disabled=True, custom_id="resetbutton", view=self))
 
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
