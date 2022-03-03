@@ -23,7 +23,7 @@ class CalculatorButton(discord.ui.Button):
         if self.label != "=" or self.label != "#":
             self.view.equal.disabled = False
             self.view.reset.disabled = False
-            option = self.option[self.label]
+            option = self.options[self.label]
             self.math += option
             self.embed.description = self.math
         await interaction.response.edit_message(embed=self.embed, view=self.view)
@@ -35,33 +35,33 @@ class CalculatorView(discord.ui.View):
         self.ctx = ctx
         self.embed = embed
         self.math = ""
-        self.add_item(CalculatorButton(label="/", row=0, view=self))
-        self.add_item(CalculatorButton(label="*", row=0, view=self))
-        self.add_item(CalculatorButton(label="-", row=0, view=self))
-        self.add_item(CalculatorButton(label="+", row=0, view=self))
-        self.add_item(CalculatorButton(label="7", row=1, view=self))
-        self.add_item(CalculatorButton(label="8", row=1, view=self))
-        self.add_item(CalculatorButton(label="9", row=1, view=self))
-        self.add_item(CalculatorButton(label="%", row=1, view=self))
-        self.add_item(CalculatorButton(label="4", row=2, view=self))
-        self.add_item(CalculatorButton(label="5", row=2, view=self))
-        self.add_item(CalculatorButton(label="6", row=2, view=self))
-        self.add_item(CalculatorButton(label="(", row=2, view=self))
-        self.add_item(CalculatorButton(label="1", row=3, view=self))
-        self.add_item(CalculatorButton(label="2", row=3, view=self))
-        self.add_item(CalculatorButton(label="3", row=3, view=self))
-        self.add_item(CalculatorButton(label=")", row=3, view=self))
-        self.add_item(CalculatorButton(label="0", row=4, view=self))
-        self.add_item(CalculatorButton(label=".", row=4, view=self))
+        self.add_item(CalculatorButton(label="/", style=discord.ButtonStyle.blurple, row=0, view=self))
+        self.add_item(CalculatorButton(label="*", style=discord.ButtonStyle.blurple, row=0, view=self))
+        self.add_item(CalculatorButton(label="-", style=discord.ButtonStyle.blurple, row=0, view=self))
+        self.add_item(CalculatorButton(label="+", style=discord.ButtonStyle.blurple, row=0, view=self))
+        self.add_item(CalculatorButton(label="7", style=discord.ButtonStyle.blurple, row=1, view=self))
+        self.add_item(CalculatorButton(label="8", style=discord.ButtonStyle.blurple, row=1, view=self))
+        self.add_item(CalculatorButton(label="9", style=discord.ButtonStyle.blurple, row=1, view=self))
+        self.add_item(CalculatorButton(label="%", style=discord.ButtonStyle.blurple, row=1, view=self))
+        self.add_item(CalculatorButton(label="4", style=discord.ButtonStyle.blurple, row=2, view=self))
+        self.add_item(CalculatorButton(label="5", style=discord.ButtonStyle.blurple, row=2, view=self))
+        self.add_item(CalculatorButton(label="6", style=discord.ButtonStyle.blurple, row=2, view=self))
+        self.add_item(CalculatorButton(label="(", style=discord.ButtonStyle.blurple, row=2, view=self))
+        self.add_item(CalculatorButton(label="1", style=discord.ButtonStyle.blurple, row=3, view=self))
+        self.add_item(CalculatorButton(label="2", style=discord.ButtonStyle.blurple, row=3, view=self))
+        self.add_item(CalculatorButton(label="3", style=discord.ButtonStyle.blurple, row=3, view=self))
+        self.add_item(CalculatorButton(label=")", style=discord.ButtonStyle.blurple, row=3, view=self))
+        self.add_item(CalculatorButton(label="0", style=discord.ButtonStyle.blurple, row=4, view=self))
+        self.add_item(CalculatorButton(label=".", style=discord.ButtonStyle.blurple, row=4, view=self))
 
-    @discord.ui.button(label="=", row=4, disabled=True)
+    @discord.ui.button(label="=", style=discord.ButtonStyle.green, row=4, disabled=True)
     async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
         result = expr.evaluate(self.math)
         self.embed.description += F"\nResult: {result}"
         await interaction.response.edit_message(embed=self.embed, view=button.view)
 
-    @discord.ui.button(label="#", row=4, disabled=True)
+    @discord.ui.button(label="#", style=discord.ButtonStyle.red, row=4, disabled=True)
     async def reset(self, button:discord.ui.Button, interaction:discord.Interaction):
         self.disabled = True
         self.math = ""
