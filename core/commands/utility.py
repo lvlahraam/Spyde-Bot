@@ -20,11 +20,10 @@ class CalculatorButton(discord.ui.Button):
         }
 
     async def callback(self, interaction:discord.Interaction):
-        if self.label != "=" or self.label != "#":
-            self.view.equal.disabled = False
-            self.view.reset.disabled = False
-            self.math += self.label
-            self.embed.description = self.math
+        self.view.equal.disabled = False
+        self.view.reset.disabled = False
+        self.math += self.label
+        self.embed.description += self.math
         await interaction.response.edit_message(embed=self.embed, view=self.view)
 
 
