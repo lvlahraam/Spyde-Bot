@@ -1,4 +1,4 @@
-import discord
+import discord, random
 from discord.ext import commands
 
 class Economy(commands.Cog, description="Are you good at keeping money?!"):
@@ -48,6 +48,42 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         else:
             gmbed.title = F"{ctx.author.name} doesn't have a account yet!"
         await ctx.reply(embed=gmbed)
+
+    # Balance
+    @commands.command(name="balance", aliases=["bal"], description="Shows your balance")
+    async def balance(self, ctx:commands.Context):
+        author = await self.bot.mongodb.economy.find_one({"user_id": ctx.author.id})
+        balmbed = discord.Embed(
+            color=self.bot.color,
+            timestamp=ctx.message.created_at
+        )
+        balmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if author:
+            balmbed.title = "Worked!"
+            balmbed.description = F"Balance is: {author['balance']}"
+        else:
+            balmbed.title = F"{ctx.author.name} doesn't have a account yet!"
+        await ctx.reply(embed=balmbed)
+
+    # Work
+    @commands.command(name="work", aliases=["wk"], description="Adds the amount of money you worked to your balance")
+    @commands.cooldown(1, 86400, commands.BucketType.user)
+    async def work(self, ctx:commands.Context):
+        author = await self.bot.mongodb.economy.find_one({"user_id": ctx.author.id})
+        wkmbed = discord.Embed(
+            color=self.bot.color,
+            timestamp=ctx.message.created_at
+        )
+        wkmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if author:
+            wkmbed.title = "Worked!"
+            payback = random.randrange(1, 1000)
+            await self.bot.mongodb.economy.update_one({"user_id": ctx.author.id}, {"$set": {"balance": author["balance"]+payback}})
+            wkmbed.add_field(name="Transfer:", value=F"{payback}$ has been added to {ctx.author.mention}!", inline=False)
+            wkmbed.add_field(name="Balance:", value=F"{ctx.author.mention} now has {author['balance']+payback}$!", inline=False)
+        else:
+            wkmbed.title = F"{ctx.author.name} doesn't have a account yet!"
+        await ctx.reply(embed=wkmbed)
 
 def setup(bot):
     bot.add_cog(Economy(bot))
