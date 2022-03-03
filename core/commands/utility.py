@@ -23,7 +23,7 @@ class CalculatorButton(discord.ui.Button):
         self.view.equal.disabled = False
         self.view.reset.disabled = False
         self.math += self.label
-        self.embed.description += self.math
+        self.embed.description = self.math
         await interaction.response.edit_message(embed=self.embed, view=self.view)
 
 
