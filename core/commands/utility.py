@@ -6,6 +6,7 @@ import discord, expr
 
 class CalculatorButton(discord.ui.Button):
     def __init__(self, view, **kwargs):
+        self.mainview = view
         self.embed = view.embed
         self.options = {
         "7": "7",
@@ -29,9 +30,9 @@ class CalculatorButton(discord.ui.Button):
 
     async def callback(self, interaction:discord.Interaction):
         if self.label != "=" or self.label != "^":
-            equalbutton = discord.utils.get(self.view.children, custom_id="equalbutton")
+            equalbutton = discord.utils.get(self.mainview.children, custom_id="equalbutton")
             equalbutton.disabled = False
-            resetbutton = discord.utils.get(self.view.children, custom_id="resetbutton")
+            resetbutton = discord.utils.get(self.mainview.children, custom_id="resetbutton")
             resetbutton.disabled = False
             option = self.option[self.label]
             self.math += option
