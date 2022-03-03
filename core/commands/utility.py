@@ -53,8 +53,6 @@ class CalculatorView(discord.ui.View):
         self.add_item(CalculatorButton(label=")", row=3, view=self))
         self.add_item(CalculatorButton(label="0", row=4, view=self))
         self.add_item(CalculatorButton(label=".", row=4, view=self))
-        self.add_item(CalculatorButton(label="=", row=4, disabled=True, custom_id="equalbutton", view=self))
-        self.add_item(CalculatorButton(label="#", row=4, disabled=True, custom_id="resetbutton", view=self))
 
     @discord.ui.button(label="=", row=4, disabled=4)
     async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
