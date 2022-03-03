@@ -1,85 +1,6 @@
-import discord, expr, asyncio, typing, string, random
+import discord, asyncio, typing, string, random
 from discord.ext import commands
-from core.views import confirm, pagination
-
-class CalculatorButton(discord.ui.Button):
-    def __init__(self, view, **kwargs):
-        super().__init__(**kwargs)
-        self.math = view.math
-        self.embed = view.embed
-        self.options = {
-            "8": "8",
-            "9": "9",
-            "4": "4",
-            "5": "5",
-            "6": "6",
-            "1": "1",
-            "2": "2",
-            "3": "3",
-            "0": "0"
-        }
-
-    async def callback(self, interaction:discord.Interaction):
-        self.view.equal.disabled = False
-        self.view.reset.disabled = False
-        self.math += self.label
-        self.embed.description = self.math
-        await interaction.response.edit_message(embed=self.embed, view=self.view)
-
-
-class CalculatorView(discord.ui.View):
-    def __init__(self, ctx, embed):
-        super().__init__(timeout=None)
-        self.ctx = ctx
-        self.embed = embed
-        self.math = ""
-        self.add_item(CalculatorButton(label="/", style=discord.ButtonStyle.blurple, row=0, view=self))
-        self.add_item(CalculatorButton(label="*", style=discord.ButtonStyle.blurple, row=0, view=self))
-        self.add_item(CalculatorButton(label="-", style=discord.ButtonStyle.blurple, row=0, view=self))
-        self.add_item(CalculatorButton(label="+", style=discord.ButtonStyle.blurple, row=0, view=self))
-        self.add_item(CalculatorButton(label="7", style=discord.ButtonStyle.blurple, row=1, view=self))
-        self.add_item(CalculatorButton(label="8", style=discord.ButtonStyle.blurple, row=1, view=self))
-        self.add_item(CalculatorButton(label="9", style=discord.ButtonStyle.blurple, row=1, view=self))
-        self.add_item(CalculatorButton(label="%", style=discord.ButtonStyle.blurple, row=1, view=self))
-        self.add_item(CalculatorButton(label="4", style=discord.ButtonStyle.blurple, row=2, view=self))
-        self.add_item(CalculatorButton(label="5", style=discord.ButtonStyle.blurple, row=2, view=self))
-        self.add_item(CalculatorButton(label="6", style=discord.ButtonStyle.blurple, row=2, view=self))
-        self.add_item(CalculatorButton(label="(", style=discord.ButtonStyle.blurple, row=2, view=self))
-        self.add_item(CalculatorButton(label="1", style=discord.ButtonStyle.blurple, row=3, view=self))
-        self.add_item(CalculatorButton(label="2", style=discord.ButtonStyle.blurple, row=3, view=self))
-        self.add_item(CalculatorButton(label="3", style=discord.ButtonStyle.blurple, row=3, view=self))
-        self.add_item(CalculatorButton(label=")", style=discord.ButtonStyle.blurple, row=3, view=self))
-        self.add_item(CalculatorButton(label="0", style=discord.ButtonStyle.blurple, row=4, view=self))
-        self.add_item(CalculatorButton(label=".", style=discord.ButtonStyle.blurple, row=4, view=self))
-
-    @discord.ui.button(label="=", style=discord.ButtonStyle.green, row=4, disabled=True)
-    async def equal(self, button:discord.ui.Button, interaction:discord.Interaction):
-        button.disabled = True
-        self.reset.disabled = True
-        result = expr.evaluate(self.math)
-        self.embed.description += F"\nResult: {result}"
-        await interaction.response.edit_message(embed=self.embed, view=button.view)
-
-    @discord.ui.button(label="#", style=discord.ButtonStyle.red, row=4, disabled=True)
-    async def reset(self, button:discord.ui.Button, interaction:discord.Interaction):
-        button.disabled = True
-        self.equal.disabled = True
-        self.math = ""
-        self.embed.description = "Enter more numbers..."
-        await interaction.response.edit_message(embed=self.embed, view=button.view)
-
-    async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
-        if interaction.user.id != self.ctx.author.id:
-            icheckmbed = discord.Embed(
-                color=self.ctx.bot.color,
-                title=F"You can't use this",
-                description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use this\nCause they did the command\nIf you want to use this, do what they did",
-                timestamp=interaction.message.created_at
-            )
-            icheckmbed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar.url)
-            await interaction.response.send_message(embed=icheckmbed, ephemeral=True)
-            return False
-        return True
+from core.views import confirm
 
 class Utility(commands.Cog, description="Useful stuff that are open to everyone"):
     def __init__(self, bot):
@@ -95,18 +16,6 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         cumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         await ctx.channel.purge(limit=amount, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.reply(embed=cumbed, delete_after=5)
-
-    # Calculator
-    @commands.command(name="calculator", aliases=["cal"], help="Calculates the given equation")
-    async def calculator(self, ctx:commands.Context):
-        calmbed = discord.Embed(
-            color=self.bot.color,
-            title="Calculator",
-            timestamp=ctx.message.created_at
-        )
-        calmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        view = CalculatorView(ctx, calmbed)
-        await ctx.reply(embed=calmbed, view=view)
 
     # Remind
     @commands.command(name="remind", aliases=["rm"], help="Reminds you with the given task and seconds")
