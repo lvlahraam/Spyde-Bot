@@ -20,7 +20,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
             cambed.description = "Balance is: 0$"
         else:
             cambed.title = "Account already exists!"
-            cambed.description = F"Balance is: {balance['balance']}"
+            cambed.description = F"Balance is: {balance['balance']}$"
         cambed.description += "\nYou can gain money by using other commands!"
         await ctx.reply(embed=cambed)
 
@@ -60,7 +60,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         balmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if author:
             balmbed.title = "Worked!"
-            balmbed.description = F"Balance is: {author['balance']}"
+            balmbed.description = F"Balance is: {author['balance']}$"
         else:
             balmbed.title = F"{ctx.author.name} doesn't have a account yet!"
         await ctx.reply(embed=balmbed)
