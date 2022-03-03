@@ -23,8 +23,7 @@ class CalculatorButton(discord.ui.Button):
         if self.label != "=" or self.label != "#":
             self.view.equal.disabled = False
             self.view.reset.disabled = False
-            option = self.options[self.label]
-            self.math += option
+            self.math += self.label
             self.embed.description = self.math
         await interaction.response.edit_message(embed=self.embed, view=self.view)
 
