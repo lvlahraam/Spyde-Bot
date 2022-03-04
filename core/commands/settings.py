@@ -64,22 +64,22 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 await self.bot.mongodb.welcome.delete_one({"guild_id": ctx.guild.id})
         elif option == "channel":
             if type(value) == discord.TextChannel:
-                welmbed.title = "Welcome channel has been changed to:"
-                welmbed.description = value.mention
                 if not welcome:
-                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Welcome to .guild .member", "channel": value.id})
+                    welmbed.title = "Welome is turned off"
                 else:
                     await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"channel": value.id}})
+                    welmbed.title = "Welcome channel has been changed to:"
+                    welmbed.description = value.mention
             else:
                 welmbed.title = "You need to pass a text channel"
         elif option == "message":
             if type(value) == str:
-                welmbed.title = "Welcome message has been changed to:"
-                welmbed.description = value
                 if not welcome:
-                    await self.bot.mongodb.welcome.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
+                    welmbed.title = "Welcome is turned off"
                 else:
                     await self.bot.mongodb.welcome.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
+                    welmbed.title = "Welcome message has been changed to:"
+                    welmbed.description = value
             else:
                 welmbed.title = "You need to pass a string"
         elif option == "status":
@@ -111,22 +111,22 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 await self.bot.mongodb.goodbye.delete_one({"guild_id": ctx.guild.id})
         elif option == "channel":
             if type(value) == discord.TextChannel:
-                byembed.title = "Goodbye channel has been changed to:"
-                byembed.description = value.mention
                 if not goodbye:
-                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": "Thank you .member for being here", "channel": value.id})
+                    byembed.title = "Goodbye is turned off"
                 else:
                     await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"channel": value.id}})
+                    byembed.title = "Goodbye channel has been changed to:"
+                    byembed.description = value.mention
             else:
                 byembed.title = "You need to pass a text channel"
         elif option == "message":
             if type(value) == str:
-                byembed.title = "Goodbye message has been changed to:"
-                byembed.description = value
                 if not goodbye:
-                    await self.bot.mongodb.goodbye.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "message": value, "channel": ctx.guild.system_channel.id if ctx.guild.system_channel else ctx.guild.text_channels[0].id})
+                    byembed.title = "Goodbye is turned off"
                 else:
                     await self.bot.mongodb.goodbye.update_one({"guild_id": ctx.guild.id}, {"$set": {"message": value}})
+                    byembed.title = "Goodbye message has been changed to:"
+                    byembed.description = value
             else:
                 byembed.title = "You need to pass a string"
         elif option == "status":
@@ -151,30 +151,25 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
             timestamp=ctx.message.created_at,
         )
         tkmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        tkviewmbed = discord.Embed(
-            color=self.bot.color,
-            title="📮 Ticketer",
-            description=F"Use the button to open a ticket",
-        )
         number = await self.bot.mongodb.tickets.find_one({"guild_id": ctx.guild.id})
-        if option == "on":
-            if number:
-                tkmbed.title += " is already turned on"
-            else:
+        if option == "toggle":
+            if not number:
                 category = await ctx.guild.create_category("Tickets")
                 await self.bot.mongodb.tickets.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "category": category.id, "number": 1})
-                ch = await category.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"Opening a ticket")
-                await ch.set_permissions(ctx.guild.default_role, send_messages=False)
+                ch = await category.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"For opening a ticket")
+                await ch.set_permissions(ctx.guild.default_role, send_messages=False, add_reactions=False)
                 tkmbed.title += " has been turned on"
-                tkmbed.description = F"Tickets are now created in {category.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command `.ticket Off` to turn off the ticketer\nYou can see the status of the ticketer with `.ticket Status`"
+                tkmbed.description = F"Tickets are now created in {category.mention} cateogry and {ch.mention}\nPlease don't delete the channel, if you did,\nPlease use this command again if you wanted to turn off the ticketer\nYou can see the status of the ticketer with `ticket status`"
+                tkviewmbed = discord.Embed(
+                    color=self.bot.color,
+                    title="📮 Ticketer",
+                    description=F"Use the button to open a ticket",
+                )
                 await ch.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
-        elif option == "off":
-            if not number:
-                tkmbed.title += " is already turned off"
             else:
                 await self.bot.mongodb.tickets.delete_one({"guild_id": ctx.guild.id})
                 tkmbed.title += " has been turned off"
-                tkmbed.description = "You can Delete the categor(y/ies) and channel(s)"
+                tkmbed.description = "You can now delete the category and the channels"
         elif option == "status":
             if not number:
                 tkmbed.title += " is turned off"
@@ -191,12 +186,12 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 await ctx.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
         elif option == "category":
             if value:
-                tkmbed.title += " category has been set"
-                tkmbed.description = F"Tickets are now created in {value.mention} cateogry"
-                if number:
-                    await self.bot.mongodb.tickets.update_one({"guild_id": ctx.guild.id}, {"$set": {"category": value}})
+                if not number:
+                    tkmbed.title = " is turned off can't set new category"
                 else:
-                    await self.bot.mongodb.tickets.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "category": value.id, "number": 1})
+                    tkmbed.title += " category has been set"
+                    tkmbed.description = F"Tickets are now created in {value.mention} cateogry"
+                    await self.bot.mongodb.tickets.update_one({"guild_id": ctx.guild.id}, {"$set": {"category": value}})
             else:
                 tkmbed.title += " you must pass a category for value"
         await ctx.reply(embed=tkmbed)
