@@ -59,7 +59,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         )
         balmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if author:
-            balmbed.title = "Worked!"
+            balmbed.title = "Balance!"
             balmbed.description = F"Balance is: {author['balance']}$"
         else:
             balmbed.title = F"{ctx.author.name} doesn't have a account yet!"
@@ -97,7 +97,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         wkmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if author:
             wkmbed.title = "Weekly!"
-            payback = random.randrange(1, 1000)
+            payback = random.randrange(500, 1000)
             await self.bot.mongodb.economy.update_one({"user_id": ctx.author.id}, {"$set": {"balance": author["balance"]+payback}})
             wkmbed.add_field(name="Transfer:", value=F"{payback}$ has been added to {ctx.author.mention}!", inline=False)
             wkmbed.add_field(name="Balance:", value=F"{ctx.author.mention} now has {author['balance']+payback}$!", inline=False)
