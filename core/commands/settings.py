@@ -7,8 +7,9 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         self.bot = bot
 
     # Prefix
-    @commands.command(name="prefix", aliases=["pf"], help="Setting up the prefix with these, Consider using subcommands", invoke_without_command=True)
+    @commands.command(name="prefix", aliases=["pf"], help="Setting up the prefix with this")
     @commands.guild_only()
+    @commands.has_guild_permissions(administrator=True)
     async def prefix(self, ctx:commands.Context, options:typing.Literal["set", "reset", "show"]=commands.Option(description="The option you want to use"), *, prefix:str=commands.Option(description="The prefix you want to be set", default=None)):
         pfmbed = discord.Embed(
             color=self.bot.color,
@@ -46,8 +47,9 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         await ctx.reply(embed=pfmbed)
 
     # Welcome
-    @commands.command(name="welcome", aliases=["wel"], help="Setting up the welcomer with these")
+    @commands.command(name="welcome", aliases=["wel"], help="Setting up the welcomer with this")
     @commands.guild_only()
+    @commands.has_guild_permissions(administrator=True)
     async def welcome(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "status"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
         welmbed = discord.Embed(
             color=self.bot.color,
@@ -95,6 +97,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
     # Goodbye
     @commands.command(name="goodbye", aliases=["bye"], help="Setting up the goodbyer with this")
     @commands.guild_only()
+    @commands.has_guild_permissions(administrator=True)
     async def goodbye(self, ctx:commands.Context, option:typing.Literal["toggle", "channel", "message", "status"]=commands.Option(description="The option you want to use"), *, value:typing.Union[discord.TextChannel, str]=commands.Option(description="The value you want to set", default=None)):
         byembed = discord.Embed(
             color=self.bot.color,
