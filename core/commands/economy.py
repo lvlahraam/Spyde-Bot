@@ -65,10 +65,30 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
             balmbed.title = F"{ctx.author.name} doesn't have a account yet!"
         await ctx.reply(embed=balmbed)
 
-    # Work
-    @commands.command(name="work", aliases=["wk"], description="Adds the amount of money you worked to your balance")
+    # Daily
+    @commands.command(name="daily", aliases=["di"], description="Adds a random amount of money to your balance, per day")
     @commands.cooldown(1, 86400, commands.BucketType.user)
-    async def work(self, ctx:commands.Context):
+    async def daily(self, ctx:commands.Context):
+        author = await self.bot.mongodb.economy.find_one({"user_id": ctx.author.id})
+        dimbed = discord.Embed(
+            color=self.bot.color,
+            timestamp=ctx.message.created_at
+        )
+        dimbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if author:
+            dimbed.title = "Daily!"
+            payback = random.randrange(1, 500)
+            await self.bot.mongodb.economy.update_one({"user_id": ctx.author.id}, {"$set": {"balance": author["balance"]+payback}})
+            dimbed.add_field(name="Transfer:", value=F"{payback}$ has been added to {ctx.author.mention}!", inline=False)
+            dimbed.add_field(name="Balance:", value=F"{ctx.author.mention} now has {author['balance']+payback}$!", inline=False)
+        else:
+            dimbed.title = F"{ctx.author.name} doesn't have a account yet!"
+        await ctx.reply(embed=dimbed)
+
+    # Weekly
+    @commands.command(name="weekly", aliases=["wk"], description="Adds a random amount of money to your balance, per week")
+    @commands.cooldown(1, 604800, commands.BucketType.user)
+    async def weekly(self, ctx:commands.Context):
         author = await self.bot.mongodb.economy.find_one({"user_id": ctx.author.id})
         wkmbed = discord.Embed(
             color=self.bot.color,
@@ -76,7 +96,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         )
         wkmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if author:
-            wkmbed.title = "Worked!"
+            wkmbed.title = "Weekly!"
             payback = random.randrange(1, 1000)
             await self.bot.mongodb.economy.update_one({"user_id": ctx.author.id}, {"$set": {"balance": author["balance"]+payback}})
             wkmbed.add_field(name="Transfer:", value=F"{payback}$ has been added to {ctx.author.mention}!", inline=False)

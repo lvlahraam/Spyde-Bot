@@ -152,8 +152,10 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
         )
         tkmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         number = await self.bot.mongodb.tickets.find_one({"guild_id": ctx.guild.id})
-        if option == "toggle":
-            if not number:
+        if option == "on":
+            if number:
+                tkmbed.title += " is already turned on"
+            else:
                 category = await ctx.guild.create_category("Tickets")
                 await self.bot.mongodb.tickets.insert_one({"guild_name": ctx.guild.name, "guild_id": ctx.guild.id, "category": category.id, "number": 1})
                 ch = await category.create_text_channel(F"Open", reason=F"Setting up ticketer", topic=F"For opening a ticket")
@@ -166,6 +168,9 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                     description=F"Use the button to open a ticket",
                 )
                 await ch.send(embed=tkviewmbed, view=ticket.TicketView(self.bot))
+        elif option == "off":
+            if not number:
+                tkmbed.title += " is already turned off"
             else:
                 await self.bot.mongodb.tickets.delete_one({"guild_id": ctx.guild.id})
                 tkmbed.title += " has been turned off"
@@ -177,7 +182,7 @@ class Settings(commands.Cog, description="Setting up the bot with these!"):
                 mongo = await self.bot.mongodb.tickets.find_one({"guild_id": ctx.guild.id})
                 category = self.bot.get_channel(mongo["category"])
                 tkmbed.title += " is turned on"
-                tkmbed.description = F"Tickets are now created in the {category.mention} cateogry"
+                tkmbed.description = F"Tickets are being created in the {category.mention} cateogry"
         elif option == "button":
             if not number:
                 tkmbed.title += " is turned off"
