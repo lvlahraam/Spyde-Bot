@@ -20,7 +20,7 @@ class OnReady(commands.Cog):
         print(F"Readied as: {self.bot.user} - {self.bot.user.id}\nReady in discord.")
         if not self.bot.persistent_views_added:
             self.bot.add_view(ticket.TicketView(self.bot))
-            self.bot.add_view(ticket.CloseTicketView(self.bot, None, None))
+            self.bot.add_view(ticket.CloseTicketView(None, None))
             self.bot.persistent_views_added = True
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=F"over {len(self.bot.guilds)} G's & {len(self.bot.users)} U's"))
         for command in self.bot.commands:
