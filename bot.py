@@ -61,12 +61,6 @@ class SpydeBase(commands.AutoShardedBot):
             if event.endswith(".py"):
                 self.load_extension(F"core.events.{event[:-3]}")
                 self._events.append(event[:-3])
-        self._others = ["Jishaku"]
-        self.load_extension("jishaku")
-        os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
-        os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
-        os.environ["GIT_DISCOVERY_ACROSS_FILESYSTEM"] = "True"
-        self.get_command("jsk").hidden = True
 
     async def close(self):
         if not self.session.closed:
