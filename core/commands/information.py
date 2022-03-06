@@ -2,27 +2,42 @@ import discord, sys, time, io, typing
 from discord.ext import commands
 from core.views import confirm, pagination
 
-class SuggestModal(discord.ui.Modal, title="Suggesting Form"):
-    name = discord.ui.TextInput(label="What are you suggesting?")
-    reason = discord.ui.TextInput(label="Why are you suggesting this?", style=discord.TextStyle.paragraph)
+class SuggestModal(discord.ui.Modal):
+    def __init__(self, view):
+        super().__init__("Try suggesting something!")
+        self.ctx = view.ctx
+        self.add_item(
+            discord.ui.TextInput(
+                label="What are you suggesting?",
+                placeholder="The title for your suggestion"
+            )
+        )
+        self.add_item(
+            discord.ui.TextInput(
+                label="Why are you suggesting this?",
+                placeholder="Explain more about your suggestion",
+                style=discord.TextInputStyle.long
+            )
+        )
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction):
         sgmodalmbed = discord.Embed(
-            color=interaction.client.color,
+            color=self.ctx.bot.color,
             title=F"Suggestion from {interaction.user}",
             timestamp=interaction.message.created_at
         )
-        sgmodalmbed.add_field(name="Name:", value=self.name, inline=False)
-        sgmodalmbed.add_field(name="Reason:", value=self.reason, inline=False)
+        sgmodalmbed.add_field(name="Title:", value=self.children[0].value, inline=False)
+        sgmodalmbed.add_field(name="Reason:", value=self.children[1].value, inline=False)
         sgmodalmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
-        confirmview = confirm.ViewConfirm()
+        confirmview = confirm.ViewConfirm(self.ctx)
         await interaction.response.send_message(content="Are you sure you want to suggest this?", embed=sgmodalmbed, view=confirmview, ephemeral=True)
         await confirmview.wait()
         if confirmview.value:
-            return await interaction.client.get_channel(942792272938938458).send(embed=sgmodalmbed)
+            return await self.ctx.bot.get_channel(942792272938938458).send(embed=sgmodalmbed)
 class SuggestView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, ctx):
         super().__init__(timeout=None)
+        self.ctx = ctx
 
     @discord.ui.button(label="Suggest", style=discord.ButtonStyle.blurple)
     async def open_modal(self, button: discord.Button, interaction: discord.Interaction):

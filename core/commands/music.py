@@ -596,7 +596,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         qucrmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if len(ctx.voice_client.lqueue) > 1:
             await ctx.invoke(self.queue)
-            view = confirm.ViewConfirm()
+            view = confirm.ViewConfirm(ctx)
             viewmessage = await ctx.reply("Do you want to clear the queue?", view=view)
             await view.wait()
             if view.value:

@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 
 class CloseTicketView(discord.ui.View):
-    def __init__(self, opener, chorinal):
+    def __init__(self, bot, opener, chorinal):
         super().__init__(timeout=None)
+        self.bot = bot
         self.opener = opener
         self.chorinal = chorinal
 
@@ -11,7 +12,7 @@ class CloseTicketView(discord.ui.View):
     async def close(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
         tkclosmbed = discord.Embed(
-            color=interaction.client.color,
+            color=self.bot.color,
             title="Ticket has been closed",
             description=F"{interaction.user.mention} has closed the ticket",
             timestamp=interaction.message.created_at,
@@ -24,12 +25,13 @@ class CloseTicketView(discord.ui.View):
         await self.chorinal.set_permissions(interaction.user, view_channel=False)
 
 class TicketView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(timeout=None)
+        self.bot = bot
 
     @discord.ui.button(emoji="🔓", style=discord.ButtonStyle.blurple, custom_id="persistent_ticket:blurple")
     async def open(self, button:discord.ui.Button, interaction:discord.Interaction):
-        ticket = await interaction.client.mongodb.tickets.find_one({"guild_id": interaction.channel.guild.id})
+        ticket = await self.bot.mongodb.tickets.find_one({"guild_id": interaction.channel.guild.id})
         cag = ticket["category"]
         num = ticket["number"]
         category = interaction.guild.get_channel(cag)
@@ -39,13 +41,13 @@ class TicketView(discord.ui.View):
         await channel.set_permissions(interaction.user, view_channel=True)
         await channel.set_permissions(interaction.guild.default_role, view_channel=False)
         tkopenmbed = discord.Embed(
-            color=interaction.client.color,
+            color=self.bot.color,
             title="Ticket has been opened",
             description=F"{interaction.user.mention} has opened a ticket\nUse the button to close the ticket",
             timestamp=interaction.message.created_at,
         )
         tkopenmbed.set_footer(text=interaction.user, icon_url=interaction.user.display_avatar.url)
-        await interaction.client.mongodb.tickets.find_one_and_update({"guild_id": interaction.channel.guild.id}, {"$set": {"number": num+1}})
+        await self.bot.mongodb.tickets.find_one_and_update({"guild_id": interaction.channel.guild.id}, {"$set": {"number": num+1}})
         await interaction.response.send_message(content=F"Your ticket has been opened in {channel.mention}", ephemeral=True)
         await interaction.channel.set_permissions(interaction.user, view_channel=False)
-        await channel.send(embed=tkopenmbed, view=CloseTicketView(interaction.client, interaction.user, interaction.channel), allowed_mentions=discord.AllowedMentions.all())
+        await channel.send(embed=tkopenmbed, view=CloseTicketView(self.bot, interaction.user, interaction.channel), allowed_mentions=discord.AllowedMentions.all())
