@@ -1,5 +1,26 @@
-import discord
+import discord, asyncio
 from discord.ext import commands
+
+class DeleteTicketView(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(emoji="💣", style=discord.ButtonStyle.red, custom_id="persistent_ticket:red")
+    async def delete(self, button:discord.ui.Button, interaction:discord.Interaction):
+        button.disabled = True
+        tkdeletembed = discord.Embed(
+            color=self.bot.color,
+            title="Ticket has been deleted",
+            description=F"{interaction.user.mention} has deleted the ticket",
+            timestamp=interaction.message.created_at,
+        )
+        tkdeletembed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
+        await interaction.response.edit_message(view=button.view)
+        await interaction.followup.send(embed=tkdeletembed)
+        await asyncio.sleep(5)
+        await interaction.channel.delete(reason=F"{interaction.user.display_name} ({interaction.user.id}) has deleted the ticket")
+        
 
 class CloseTicketView(discord.ui.View):
     def __init__(self, bot, opener, chorinal):
@@ -8,19 +29,19 @@ class CloseTicketView(discord.ui.View):
         self.opener = opener
         self.chorinal = chorinal
 
-    @discord.ui.button(emoji="🔒", style=discord.ButtonStyle.red, custom_id="persistent_ticket:red")
+    @discord.ui.button(emoji="🔒", style=discord.ButtonStyle.green, custom_id="persistent_ticket:green")
     async def close(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
         tkclosmbed = discord.Embed(
             color=self.bot.color,
             title="Ticket has been closed",
             description=F"{interaction.user.mention} has closed the ticket",
-            timestamp=interaction.message.created_at,
+            timestamp=interaction.message.created_at
         )
         tkclosmbed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
         await interaction.channel.edit(name=F"{interaction.channel.name}-closed", reason=F"{interaction.user} closed the ticket", topic=F"{interaction.channel.topic} - Closed by {interaction.user}")
         await interaction.response.edit_message(view=button.view)
-        await interaction.followup.send(embed=tkclosmbed)
+        await interaction.followup.send(embed=tkclosembed, view=DeleteTicketView(self.bot))
         await interaction.channel.set_permissions(self.opener, view_channel=False)
         await self.chorinal.set_permissions(interaction.user, view_channel=False)
 
