@@ -12,13 +12,13 @@ class DeleteTicketView(discord.ui.View):
         tkdeletembed = discord.Embed(
             color=self.bot.color,
             title="Ticket has been deleted",
-            description=F"{interaction.user.mention} has deleted the ticket",
+            description=F"{interaction.user.mention} has deleted the ticket\nWait at least for 2.5 seconds",
             timestamp=interaction.message.created_at,
         )
         tkdeletembed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
         await interaction.response.edit_message(view=button.view)
         await interaction.followup.send(embed=tkdeletembed)
-        await asyncio.sleep(5)
+        await asyncio.sleep(2.5)
         await interaction.channel.delete(reason=F"{interaction.user.display_name} ({interaction.user.id}) has deleted the ticket")
         
 
@@ -35,7 +35,7 @@ class CloseTicketView(discord.ui.View):
         tkclosembed = discord.Embed(
             color=self.bot.color,
             title="Ticket has been closed",
-            description=F"{interaction.user.mention} has closed the ticket",
+            description=F"{interaction.user.mention} has closed the ticket\nUse the button to delete the ticket",
             timestamp=interaction.message.created_at
         )
         tkclosembed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
