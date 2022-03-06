@@ -32,13 +32,13 @@ class CloseTicketView(discord.ui.View):
     @discord.ui.button(emoji="🔒", style=discord.ButtonStyle.green, custom_id="persistent_ticket:green")
     async def close(self, button:discord.ui.Button, interaction:discord.Interaction):
         button.disabled = True
-        tkclosmbed = discord.Embed(
+        tkclosembed = discord.Embed(
             color=self.bot.color,
             title="Ticket has been closed",
             description=F"{interaction.user.mention} has closed the ticket",
             timestamp=interaction.message.created_at
         )
-        tkclosmbed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
+        tkclosembed.set_footer(text=interaction.user, icon_url=interaction.user.avatar.url)
         await interaction.channel.edit(name=F"{interaction.channel.name}-closed", reason=F"{interaction.user} closed the ticket", topic=F"{interaction.channel.topic} - Closed by {interaction.user}")
         await interaction.response.edit_message(view=button.view)
         await interaction.followup.send(embed=tkclosembed, view=DeleteTicketView(self.bot))
