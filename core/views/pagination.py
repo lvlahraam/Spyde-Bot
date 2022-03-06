@@ -67,7 +67,7 @@ class ViewPagination(discord.ui.View):
     async def interaction_check(self, item:discord.ui.Item, interaction:discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
             icheckmbed = discord.Embed(
-                color=self.ctx.bot.color,
+                color=interaction.client.color,
                 title=F"You can't use this",
                 description=F"{interaction.user.mention} - Only {self.ctx.author.mention} can use this\nCause they did the command\nIf you want to use this, do what they did",
                 timestamp=interaction.message.created_at

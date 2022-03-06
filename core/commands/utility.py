@@ -14,7 +14,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             title=F"Cleaned-up {amount} of bot messages",
         )
         cumbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
-        await ctx.channel.purge(limit=amount, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
+        await ctx.channel.purge(limit=amount, check=lambda m: m.author.id == ctx.me.id, bulk=False)
         await ctx.reply(embed=cumbed, delete_after=5)
 
     # Remind
@@ -58,7 +58,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         if option == "create":
             backups = await self.bot.mongodb.backups.find({"user_id": ctx.author.id}).to_list(length=None)
             if len(backups) <= 25:
-                view = confirm.ViewConfirm(ctx)
+                view = confirm.ViewConfirm()
                 view.message = await ctx.reply(content="Are you sure if you want to create a backup for this server?", view=view)
                 await view.wait()
                 if view.value:
@@ -100,7 +100,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                         ropag.add_line(role.name)
                     if backup['icon']: bumbed.set_image(url=backup['icon'])
                     if backup['banner']: bumbed.set_thumbnail(url=backup['banner'])
-                    view = confirm.ViewConfirm(ctx)
+                    view = confirm.ViewConfirm()
                     view.message = await ctx.reply(content="Are you sure if you want to delete this backup?", embed=bumbed, view=view)
                     await view.wait()
                     if view.value:
@@ -158,7 +158,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                         ropag.add_line(role.name)
                     if backup['icon']: bumbed.set_image(url=backup['icon'])
                     if backup['banner']: bumbed.set_thumbnail(url=backup['banner'])
-                    view = confirm.ViewConfirm(ctx)
+                    view = confirm.ViewConfirm()
                     view.message = await ctx.reply(content="Are you sure if you want to load this backup?", embed=bumbed, view=view)
                     await view.wait()
                     if view.value:
@@ -229,7 +229,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                     counter += 1
                 ntmbed.title=F"{ctx.author.display_name}'s notes:"
                 ntmbed.description="".join(task for task in tasks)
-                view = confirm.ViewConfirm(ctx)
+                view = confirm.ViewConfirm()
                 view.message = await ctx.reply(content="Are you sure if you want to clear everything:", embed=ntmbed, view=view)
                 await view.wait()
                 if view.value:

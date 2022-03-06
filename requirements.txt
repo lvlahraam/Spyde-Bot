@@ -1,4 +1,4 @@
-git+https://github.com/iDevision/enhanced-discord.py
+git+https://github.com/Rapptz/discord.py
 git+https://github.com/Gorialis/jishaku
 git+https://github.com/mongodb/motor
 git+https://github.com/cloudwithax/pomice

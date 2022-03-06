@@ -23,6 +23,8 @@ class OnReady(commands.Cog):
             self.bot.add_view(ticket.CloseTicketView(self.bot, None, None))
             self.bot.persistent_views_added = True
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=F"over {len(self.bot.guilds)} G's & {len(self.bot.users)} U's"))
+        for command in self.bot.commands:
+            self.bot.tree.add_command(command)
 
 class OnDisconnect(commands.Cog):
     def __init__(self, bot):

@@ -86,7 +86,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         tombed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         if ctx.author.top_role.position > member.top_role.position:
             if option == "untimeout":
-                if member.timeout_until:
+                if member.is_timed_out:
                     tombed.title = "UnTimed-out"
                     await member.edit(timeout_until=None, reason=reason)
                 else:
@@ -94,19 +94,19 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
                     tombed.description = "The member is not timed-out"
             else:
                 times = {
-                    "1minutes": 1,
-                    "5minutes": 5,
-                    "15minutes": 15,
-                    "30minutes": 30,
-                    "1hour": 60,
-                    "6hour": 360,
-                    "12hour": 720,
-                    "1day": 1440,
-                    "1week": 10080
+                    "60seconds": 60,
+                    "5minutes": 300,
+                    "10seconds": 10,
+                    "15minutes": 900,
+                    "30minutes": 1800,
+                    "1hour": 3600,
+                    "6hour": 21600,
+                    "12hour": 43200,
+                    "1day": 86400,
+                    "1week": 604800
                 }
-                until = times[option] * 60 * 1000
                 tombed.title = "Timed-out"
-                await member.edit(timeout_until=until, reason=reason)
+                await member.edit(timeout_until=times[option], reason=reason)
         else:
             tombed.title = "You can't (un)timeout this user!"
         await ctx.reply(embed=tombed)
@@ -225,7 +225,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         if amount > 100:
             pumbed.title = "Can't clear more than 100 messages"
         else:
-            deleted = await ctx.channel.purge(limit=amount+1)
+            deleted = await ctx.channel.purge(limit=amount+1, bulk=False)
             pumbed.title = F"Deleted {len(deleted)} amount of messages"
         await ctx.reply(embed=pumbed, delete_after=2.5)
 
