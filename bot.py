@@ -1,4 +1,4 @@
-import discord, logging, motor.motor_asyncio, os, aiohttp, pomice, openrobot.api_wrapper, random
+import discord, logging, motor.motor_asyncio, os, aiohttp, openrobot.api_wrapper
 from core.views import help
 from discord.ext import commands
 
