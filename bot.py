@@ -45,7 +45,7 @@ async def create_node_pomice():
 class SpydeBase(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.tree = discord.app_commands(self)
+        self.tree = discord.app_commands.CommandTree(self)
         self.prefixes = {}
         self.default_prefix = ",s"
         self.color = 0x2C333A
