@@ -34,13 +34,13 @@ async def create_session_aiohttp():
     bot.session = aiohttp.ClientSession()
     print("Created a AioHttp Session")
 
-async def create_node_pomice():
-    await bot.wait_until_ready()
-    bot.pomice = pomice.NodePool()
-    spotify_id = os.getenv("SPOTIFY_ID")
-    spotify_secret = os.getenv("SPOTIFY_SECRET")
-    await bot.pomice.create_node(bot=bot, host="usa.lavalink.mitask.tech", port="2333", password="lvserver", identifier="US Lavalink", spotify_client_id=spotify_id, spotify_client_secret=spotify_secret)
-    print("Created a Pomice Node(s)")
+# async def create_node_pomice():
+#     await bot.wait_until_ready()
+#     bot.pomice = pomice.NodePool()
+#     spotify_id = os.getenv("SPOTIFY_ID")
+#     spotify_secret = os.getenv("SPOTIFY_SECRET")
+#     await bot.pomice.create_node(bot=bot, host="usa.lavalink.mitask.tech", port="2333", password="lvserver", identifier="US Lavalink", spotify_client_id=spotify_id, spotify_client_secret=spotify_secret)
+#     print("Created a Pomice Node(s)")
 
 class SpydeBase(commands.AutoShardedBot):
     def __init__(self, **kwargs):
@@ -98,5 +98,5 @@ bot.openrobot = openrobot.api_wrapper.AsyncClient(token=os.getenv("OPENROBOT"))
 
 bot.loop.run_until_complete(create_client_mongodb())
 bot.loop.create_task(create_session_aiohttp())
-bot.loop.create_task(create_node_pomice())
+# bot.loop.create_task(create_node_pomice())
 bot.run(os.getenv("TOKEN"))
