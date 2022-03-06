@@ -1,4 +1,4 @@
-# NOTE: THIS BOT DOES NOT DOWNLOAD FILE ON THE DIRECTORY
+# NOTE: THIS BOT DOES NOT DOWNLOAD THE MUSIC FILE ON THE DIRECTORY
 import discord, pomice, asyncio, datetime, io
 from discord.ext import commands
 from core.views import confirm, pagination

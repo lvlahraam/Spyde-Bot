@@ -1,4 +1,4 @@
-import discord, typing, asyncio
+import discord, typing
 from discord.ext import commands
 
 class Moderation(commands.Cog, description="Was someone being bad?"):
@@ -225,9 +225,9 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         if amount > 100:
             pumbed.title = "Can't clear more than 100 messages"
         else:
-            deleted = await ctx.channel.purge(limit=amount+1, bulk=False)
+            deleted = await ctx.channel.purge(limit=amount+1)
             pumbed.title = F"Deleted {len(deleted)} amount of messages"
-        await ctx.reply(embed=pumbed, delete_after=2.5)
+        await ctx.reply(embed=pumbed, delete_after=5)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

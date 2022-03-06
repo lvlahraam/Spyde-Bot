@@ -1,6 +1,6 @@
 import discord, pomice, io, textwrap, contextlib, traceback
 from discord.ext import commands
-from core.views import confirm
+
 class Owner(commands.Cog, description="Only my Developer can use these!"):
     def __init__(self, bot):
         self.bot = bot
