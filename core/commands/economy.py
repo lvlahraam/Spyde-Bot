@@ -25,7 +25,7 @@ class Economy(commands.Cog, description="Are you good at keeping money?!"):
         await ctx.reply(embed=cambed)
 
     # GiveMoney
-    @commands.command(name="givemoney", aliases=["gm"], help="Gives the amount of given money from your balance to the given user")
+    @commands.command(name="givemoney", aliases=["gm"], description="Gives the amount of given money from your balance to the given user")
     async def givemoney(self, ctx:commands.Context, amount:int=commands.Option(description="The amount you want give"), user:discord.User=commands.Option(description="The user you want to give the amount to")):
         author = await self.bot.mongodb.economy.find_one({"user_id": ctx.author.id})
         giving = await self.bot.mongodb.economy.find_one({"user_id": user.id})

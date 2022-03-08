@@ -65,7 +65,7 @@ class Fun(commands.Cog, description="You sad? Use these to at least have a smile
         await ctx.reply(embed=ppmbed)
 
     # Counter
-    @commands.command(name="counter", aliases=["ctr"], help="Starts an counter")
+    @commands.command(name="counter", aliases=["ctr"], description="Starts an counter")
     async def counter(self, ctx:commands.Context):
         ctrmbed = discord.Embed(
             color=self.bot.color,
@@ -90,7 +90,7 @@ class Fun(commands.Cog, description="You sad? Use these to at least have a smile
         view.message = await ctx.reply(embed=bnitrombed, view=view)
 
     # Meme
-    @commands.command(name="meme", aliases=["me"], help="Shows a random meme")
+    @commands.command(name="meme", aliases=["me"], description="Shows a random meme")
     async def meme(self, ctx:commands.Context):
         session = await self.bot.session.get("https://some-random-api.ml/meme")
         response = await session.json()
@@ -105,7 +105,7 @@ class Fun(commands.Cog, description="You sad? Use these to at least have a smile
         await ctx.reply(embed=membed)
 
     # Quote
-    @commands.command(name="quote", aliases=["qe"], help="Tells you a random quote")
+    @commands.command(name="quote", aliases=["qe"], description="Tells you a random quote")
     async def quote(self, ctx:commands.Context):
         mode = random.choice(["quotes", "today", "author", "random"])
         session = await self.bot.session.get(F"https://zenquotes.io/api/{mode}")

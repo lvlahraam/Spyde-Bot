@@ -6,7 +6,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         self.bot = bot
 
     # Ban
-    @commands.command(name="ban", aliases=["bn"], help="Bans the given user")
+    @commands.command(name="ban", aliases=["bn"], description="Bans the given user")
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True)
@@ -28,7 +28,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         await ctx.reply(embed=bnmbed)
 
     # Unban
-    @commands.command(name="unban", aliases=["un"], help="Unbans the given user")
+    @commands.command(name="unban", aliases=["un"], description="Unbans the given user")
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True)
@@ -47,7 +47,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         await ctx.reply(embed=unmbed)
 
     # Kick
-    @commands.command(name="kick", aliases=["kc"], help="Kicks the given user")
+    @commands.command(name="kick", aliases=["kc"], description="Kicks the given user")
     @commands.guild_only()
     @commands.has_guild_permissions(kick_members=True)
     @commands.bot_has_guild_permissions(kick_members=True)
@@ -70,7 +70,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         await ctx.reply(embed=kcmbed)
 
     # Timeout
-    @commands.command(name="timeout", aliases=["to"], help="Timeouts or Untimeoutes the given user based on the given option")
+    @commands.command(name="timeout", aliases=["to"], description="Timeouts or Untimeoutes the given user based on the given option")
     @commands.guild_only()
     @commands.has_guild_permissions(moderate_members=True)
     @commands.bot_has_guild_permissions(moderate_members=True)
@@ -112,7 +112,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         await ctx.reply(embed=tombed)
 
     # Slowmode
-    @commands.command(name="slowmode", aliases=["sm"], help="Changes the slowmode of this or the given channel to the given seconds")
+    @commands.command(name="slowmode", aliases=["sm"], description="Changes the slowmode of this or the given channel to the given seconds")
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
@@ -148,7 +148,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
         await ctx.reply(embed=smmbed)
 
     # Lock
-    @commands.command(name="lock", aliases=["lc"], help="Locks this or the given channel")
+    @commands.command(name="lock", aliases=["lc"], description="Locks this or the given channel")
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
@@ -180,7 +180,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             await ctx.reply(embed=lcmbed)
 
     # Unlock
-    @commands.command(name="unlock", aliases=["ulc"], help="Unlocks this or the given channel")
+    @commands.command(name="unlock", aliases=["ulc"], description="Unlocks this or the given channel")
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
@@ -212,7 +212,7 @@ class Moderation(commands.Cog, description="Was someone being bad?"):
             await ctx.reply(embed=ulcmbed)
 
     # Clear
-    @commands.command(name="clear", aliases=["cr"], help="Deletes messages for the given amount")
+    @commands.command(name="clear", aliases=["cr"], description="Deletes messages for the given amount")
     @commands.guild_only()
     @commands.has_guild_permissions(manage_messages=True)
     @commands.bot_has_guild_permissions(manage_messages=True)

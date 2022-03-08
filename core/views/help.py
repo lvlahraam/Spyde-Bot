@@ -9,7 +9,7 @@ class HelpSelect(discord.ui.Select):
         self.cogs = view.cogs
         self.home = view.home
     def gts(self, command):
-        return F"• **{command.qualified_name}** {command.signature} - {command.help or 'No help found...'}\n"
+        return F"• **{command.qualified_name}** {command.signature} - {command.description or 'No description found...'}\n"
     async def callback(self, interaction:discord.Interaction):
         self.home.disabled = False
         self.home.style = discord.ButtonStyle.green
@@ -107,7 +107,7 @@ class CustomHelp(commands.HelpCommand):
             timestamp=self.context.message.created_at
         )
         for command in cog.walk_commands():
-            hcogmbed.description += F"• **{self.get_command_signature(command)}** - {command.help or 'No help found...'}\n"
+            hcogmbed.description += F"• **{self.get_command_signature(command)}** - {command.description or 'No description found...'}\n"
         hcogmbed.set_thumbnail(url=self.context.me.display_avatar.url)
         hcogmbed.set_author(name=self.context.author, icon_url=self.context.author.display_avatar.url)
         hcogmbed.set_footer(text="<> is required | [] is optional")
@@ -119,7 +119,7 @@ class CustomHelp(commands.HelpCommand):
         hcmdmbed = discord.Embed(
             color=self.context.bot.color,
             title=self.get_command_signature(command),
-            description=command.help or "No help found...",
+            description=command.description or "No description found...",
             timestamp=self.context.message.created_at
         )
         hcmdmbed.set_thumbnail(url=self.context.me.display_avatar.url)
@@ -142,14 +142,14 @@ class CustomHelp(commands.HelpCommand):
         hgroupmbed = discord.Embed(
             color=self.context.bot.color,
             title=self.get_command_signature(group),
-            description=F"{group.help or 'No help found...'}\n\n",
+            description=F"{group.help or 'No description found...'}\n\n",
             timestamp=self.context.message.created_at
         )
         hgroupmbed.set_thumbnail(url=self.context.me.display_avatar.url)
         hgroupmbed.set_author(name=self.context.author, icon_url=self.context.author.display_avatar.url)
         hgroupmbed.set_footer(text="<> is required | [] is optional")
         for command in group.commands:
-            hgroupmbed.description += F"• **{self.get_command_signature(command)}** - {command.help or 'No help found...'}\n"
+            hgroupmbed.description += F"• **{self.get_command_signature(command)}** - {command.description or 'No description found...'}\n"
         if cog := command.cog:
             hgroupmbed.add_field(name="Category", value=F"{self.emojis.get(cog.qualified_name) if self.emojis.get(cog.qualified_name) else '❓'} {cog.qualified_name}")
         can_run = "No"

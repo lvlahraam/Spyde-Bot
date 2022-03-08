@@ -173,7 +173,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
         self.bot = bot
 
     # RockPaperScissors
-    @commands.command(name="rockpaperscissors", aliases=["rps"], help="Starts an Rock-Paper-Scissors game")
+    @commands.command(name="rockpaperscissors", aliases=["rps"], description="Starts an Rock-Paper-Scissors game")
     async def rockpaperscissors(self, ctx:commands.Context):
         rpsmbed = discord.Embed(
             color=self.bot.color,
@@ -185,7 +185,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
         view.message = await ctx.reply(embed=rpsmbed, view=view)
 
     # Coinflip
-    @commands.command(name="coinflip", aliases=["cf"], help="Starts an Coin-Flip game")
+    @commands.command(name="coinflip", aliases=["cf"], description="Starts an Coin-Flip game")
     async def coinflip(self, ctx:commands.Context):
         cfmbed = discord.Embed(
             color=self.bot.color,
@@ -197,7 +197,7 @@ class Game(commands.Cog, description="Arcade but without having to go outside!")
         view.message = await ctx.reply(embed=cfmbed, view=view)
 
     # Guess
-    @commands.command(name="guess", aliases=["gs"], help="Starts an Guessing game")
+    @commands.command(name="guess", aliases=["gs"], description="Starts an Guessing game")
     async def guess(self, ctx:commands.Context):
         gsmbed = discord.Embed(
             color=self.bot.color,

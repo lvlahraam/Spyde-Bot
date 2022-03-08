@@ -238,7 +238,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         raise commands.CheckFailure("I'm not in a voice channel")
 
     # Player
-    @commands.command(name="player", alieses=["pr"], help="Shows you the ultimate player")
+    @commands.command(name="player", alieses=["pr"], description="Shows you the ultimate player")
     @commands.guild_only()
     @commands.check(full_voice)
     async def player(self, ctx:commands.Context):
@@ -265,7 +265,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=prmbed)
 
     # Join
-    @commands.command(name="join", aliases=["jn"], help="Joins a voice channel")
+    @commands.command(name="join", aliases=["jn"], description="Joins a voice channel")
     @commands.guild_only()
     @commands.check(user_voice)
     async def join(self, ctx:commands.Context):
@@ -292,7 +292,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=jnmbed)
 
     # Disconnect
-    @commands.command(name="disconnect", aliases=["dc"], help="Disconnects from the voice channel")
+    @commands.command(name="disconnect", aliases=["dc"], description="Disconnects from the voice channel")
     @commands.guild_only()
     @commands.check(full_voice)
     async def disconnect(self, ctx:commands.Context):
@@ -322,7 +322,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=dcmbed)
 
     # Play
-    @commands.command(name="play", aliases=["pl"], help="Plays music with the given query, the query can be a url or a title or a playlist")
+    @commands.command(name="play", aliases=["pl"], description="Plays music with the given query, the query can be a url or a title or a playlist")
     @commands.guild_only()
     @commands.check(user_voice)
     async def play(self, ctx:commands.Context, *, query:str=commands.Option(description="The query you want the music from")):
@@ -363,7 +363,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=plmbed)
 
     # Stop
-    @commands.command(name="stop", aliases=["so"], help="Stops playing and Clears queue")
+    @commands.command(name="stop", aliases=["so"], description="Stops playing and Clears queue")
     @commands.guild_only()
     @commands.check(full_voice)
     async def stop(self, ctx:commands.Context):
@@ -400,7 +400,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=sombed)
 
     # Skip
-    @commands.command(name="skip", aliases=["sk"], help="Skips the music")
+    @commands.command(name="skip", aliases=["sk"], description="Skips the music")
     @commands.guild_only()
     @commands.check(full_voice)
     async def skip(self, ctx:commands.Context):
@@ -434,7 +434,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=skmbed)
 
     # Resume
-    @commands.command(name="resume", aliases=["ru"], help="Resumes the paused music")
+    @commands.command(name="resume", aliases=["ru"], description="Resumes the paused music")
     @commands.guild_only()
     @commands.check(full_voice)
     async def resume(self, ctx:commands.Context):
@@ -465,7 +465,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=rumbed, file=discord.File(fp=response, filename="player.png"), view=view)
 
     # Pause
-    @commands.command(name="pause", aliases=["pu"], help="Pauses playing music")
+    @commands.command(name="pause", aliases=["pu"], description="Pauses playing music")
     @commands.guild_only()
     @commands.check(full_voice)
     async def pause(self, ctx:commands.Context):
@@ -496,7 +496,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=pumbed, file=discord.File(fp=response, filename="player.png"), view=view)
 
     # Loop
-    @commands.command(name="loop", aliases=["lp"], help="Loops over the music")
+    @commands.command(name="loop", aliases=["lp"], description="Loops over the music")
     @commands.guild_only()
     @commands.check(full_voice)
     async def loop(self, ctx:commands.Context):
@@ -531,7 +531,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=lpmbed)
 
     # NowPlaying
-    @commands.command(name="nowplaying", aliases=["np"], help="Tells the playing music")
+    @commands.command(name="nowplaying", aliases=["np"], description="Tells the playing music")
     @commands.guild_only()
     @commands.check(bot_voice)
     async def nowplaying(self, ctx:commands.Context):
@@ -560,7 +560,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=npmbed)
 
     # Queue
-    @commands.command(name="queue", aliases=["qu"], help="Shows the queue")
+    @commands.command(name="queue", aliases=["qu"], description="Shows the queue")
     @commands.guild_only()
     @commands.check(bot_voice)
     async def queue(self, ctx:commands.Context):
@@ -584,7 +584,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.invoke(self.nowplaying)
 
     # Queue-Clear
-    @commands.command(name="queueclear", aliases=["qucr"], help="Clears the queue")
+    @commands.command(name="queueclear", aliases=["qucr"], description="Clears the queue")
     @commands.guild_only()
     @commands.check(full_voice)
     async def queue_clear(self, ctx:commands.Context):
@@ -614,7 +614,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=qucrmbed)
 
     # Seek
-    @commands.command(name="seek", aliases=["se"], help="Seeks to the given time")
+    @commands.command(name="seek", aliases=["se"], description="Seeks to the given time")
     @commands.guild_only()
     @commands.check(full_voice)
     async def seek(self, ctx:commands.Context, *, time:str=commands.Option(description="The time you want to seek to (split by space)")):
@@ -668,7 +668,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=sembed)
 
     # Volume
-    @commands.command(name="volume", aliases=["vol"], help="Sets or Tells the volume of the music")
+    @commands.command(name="volume", aliases=["vol"], description="Sets or Tells the volume of the music")
     @commands.guild_only()
     @commands.check(full_voice)
     async def volume(self, ctx:commands.Context, *, volume:int=commands.Option(description="The volume you want be set to")):
@@ -708,7 +708,7 @@ class Music(commands.Cog, description="Jamming out with these!"):
         return await ctx.reply(embed=volmbed)
 
     # Lyrics
-    @commands.command(name="lyrics", aliases=["ly"], help="Shows the lyrics for music")
+    @commands.command(name="lyrics", aliases=["ly"], description="Shows the lyrics for music")
     @commands.guild_only()
     async def lyrics(self, ctx:commands.Context, *, music:str=commands.Option(description="The music you want to get the lyrics for", default=None)):
         lymbed = discord.Embed(

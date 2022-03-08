@@ -7,7 +7,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         self.bot = bot
 
     # Cleanup
-    @commands.command(name="cleanup", aliases=["cu"], help="Deletes bot's messagess for the given amount")
+    @commands.command(name="cleanup", aliases=["cu"], description="Deletes bot's messagess for the given amount")
     async def cleanup(self, ctx:commands.Context, *, amount:int=commands.Option(description="The amount of the bot messages you want to cleanup")):
         cumbed = discord.Embed(
             color=self.bot.color,
@@ -18,7 +18,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         await ctx.reply(embed=cumbed, delete_after=5)
 
     # Remind
-    @commands.command(name="remind", aliases=["rm"], help="Reminds you with the given task and seconds")
+    @commands.command(name="remind", aliases=["rm"], description="Reminds you with the given task and seconds")
     async def remind(self, ctx:commands.Context, seconds:int=commands.Option(description="The seconds you want to get reminded at"), *, task:str=commands.Option(description="The task you want to get reminded of")):
         await ctx.reply(F"{ctx.author.mention}, in {seconds} seconds:, I will remind you About: **{task}**", allowed_mentions=discord.AllowedMentions(users=True))
         await asyncio.sleep(seconds)
@@ -45,7 +45,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             await ctx.reply(embed=afkmbed)
 
     # Backup
-    @commands.command(name="backup", aliases=["bu"], help="Backing-up data with this")
+    @commands.command(name="backup", aliases=["bu"], description="Backing-up data with this")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(administrator=True)
@@ -191,7 +191,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         await ctx.reply(embed=bumbed)
 
     # Notes
-    @commands.command(name="notes", aliases=["nt"], help="Taking notes with this")
+    @commands.command(name="notes", aliases=["nt"], description="Taking notes with this")
     async def notes(self, ctx:commands.Context, option:typing.Literal["add", "remove", "clear", "show"]=commands.Option(description="The option you want to use"), *, value:str=commands.Option(description="The value you want to use", default=None)):
         ntmbed = discord.Embed(
             color=self.bot.color,

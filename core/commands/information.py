@@ -49,7 +49,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         self.bot = bot
 
     # Stats
-    @commands.command(name="stats", aliases=["st"], help="Shows bot's stats")
+    @commands.command(name="stats", aliases=["st"], description="Shows bot's stats")
     async def stats(self, ctx:commands.Context):
         abmbed = discord.Embed(
             color=self.bot.color,
@@ -67,7 +67,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=abmbed)
 
     # Suggest
-    @commands.command(name="suggest", aliases=["sg"], help="Suggest something to the bot")
+    @commands.command(name="suggest", aliases=["sg"], description="Suggest something to the bot")
     async def suggest(self, ctx:commands.Context):
         sgmbed = discord.Embed(
             color=self.bot.color,
@@ -80,7 +80,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.send(embed=sgmbed, view=view)
 
     # Invite
-    @commands.command(name="invite", aliases=["inv"], help="Gives an invite link for the bot")
+    @commands.command(name="invite", aliases=["inv"], description="Gives an invite link for the bot")
     async def invite(self, ctx:commands.Context):
         invmbed = discord.Embed(
             color=self.bot.color,
@@ -93,7 +93,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=invmbed, view=view)
 
     # Ping
-    @commands.command(name="ping", aliases=["pi"], help="Shows bot's ping")
+    @commands.command(name="ping", aliases=["pi"], description="Shows bot's ping")
     async def ping(self, ctx:commands.Context):
         unpimbed = discord.Embed(
             color=self.bot.color,
@@ -119,7 +119,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await unpimsg.edit(embed=dopimbed)
 
     # Avatar
-    @commands.command(name="avatar", aliases=["av"], help="Shows yours or the given user's avatar")
+    @commands.command(name="avatar", aliases=["av"], description="Shows yours or the given user's avatar")
     async def avatar(self, ctx:commands.Context, user:discord.User=commands.Option(description="The user to get the avatar of", default=None)):
         user = user or ctx.author
         avmbed = discord.Embed(
@@ -132,7 +132,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=avmbed)
 
     # Banner
-    @commands.command(name="banner", aliases=["br"], help="Shows yours or the given user's banner")
+    @commands.command(name="banner", aliases=["br"], description="Shows yours or the given user's banner")
     async def banner(self, ctx:commands.Context, user:discord.User=commands.Option(description="The user to get the banner of", default=None)):
         user = user or ctx.author
         fetch = await self.bot.fetch_user(user.id)
@@ -149,7 +149,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=brmbed)
 
     # UserInfo
-    @commands.command(name="userinfo", aliases=["ui"], help="Shows yours or the given user's info")
+    @commands.command(name="userinfo", aliases=["ui"], description="Shows yours or the given user's info")
     @commands.guild_only()
     async def userinfo(self, ctx:commands.Context, member:discord.Member=commands.Option(description="The member to get the avatar of", default=None)):
         member = member or ctx.author
@@ -187,7 +187,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=uimbed)
 
     # Permissions
-    @commands.command(name="permissions", aliases=["perms"], help="Shows yours or the given member's permissions")
+    @commands.command(name="permissions", aliases=["perms"], description="Shows yours or the given member's permissions")
     @commands.guild_only()
     async def permissions(self, ctx:commands.Context, member:discord.Member=commands.Option(description="The member to get the permissions of", default=None)):
         member = member or ctx.author
@@ -210,7 +210,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=permsmbed)
 
     # Spotify
-    @commands.command(name="spotify", aliases=["sy"], help="Shows info about yours or the given member's spotify activity")
+    @commands.command(name="spotify", aliases=["sy"], description="Shows info about yours or the given member's spotify activity")
     async def spotify(self, ctx:commands.Context, member:discord.Member=commands.Option(description="The member to get the spotify activity of", default=None)):
         member = member or ctx.author
         await ctx.defer()
@@ -249,7 +249,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
             await ctx.reply(embed=symbed)
 
     # Icon
-    @commands.command(name="icon", aliases=["ic"], help="Shows the server's icon")
+    @commands.command(name="icon", aliases=["ic"], description="Shows the server's icon")
     @commands.guild_only()
     async def icon(self, ctx:commands.Context):
         icmbed = discord.Embed(
@@ -264,7 +264,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=icmbed)
 
     # ServerInfo
-    @commands.command(name="serverinfo", aliases=["si"], help="Shows the server's info")
+    @commands.command(name="serverinfo", aliases=["si"], description="Shows the server's info")
     @commands.guild_only()
     async def serverinfo(self, ctx:commands.Context):
         oi = [
@@ -306,7 +306,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await ctx.reply(embed=simbed)
 
     # Emojis
-    @commands.command(name="emojis", aliases=["es"], help="Shows every emoji with or without the given name")
+    @commands.command(name="emojis", aliases=["es"], description="Shows every emoji with or without the given name")
     @commands.guild_only()
     async def emojis(self, ctx:commands.Context, *, name:str=commands.Option(description="The name you want to be searched for", default=None)):
         esemojis = []
@@ -335,7 +335,7 @@ class Information(commands.Cog, description="Stalking people is wrong and bad!")
         await pagination.ViewPagination(ctx, esembeds).start() if len(esembeds) > 1 else await ctx.reply(embed=esembeds[0])
 
     # EmojiInfo
-    @commands.command(name="emojiinfo", aliases=["ei"], help="Gives information about the given emoji")
+    @commands.command(name="emojiinfo", aliases=["ei"], description="Gives information about the given emoji")
     @commands.guild_only()
     async def emojiinfo(self, ctx:commands.Context, emoji:typing.Union[discord.Emoji, discord.PartialEmoji]=commands.Option(description="The emoji to get the info of")):
         emmbed = discord.Embed(
