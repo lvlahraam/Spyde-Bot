@@ -235,7 +235,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             else:
                 tasks = []
                 for stuff in notes:
-                    tasks.append(F"[{stuff["number"]}.]({stuff['jump_url']}) {stuff['task']}\n")
+                    tasks.append(F"[{stuff['number']}.]({stuff['jump_url']}) {stuff['task']}\n")
                 ntmbed.title=F"{ctx.author.display_name}'s notes:"
                 ntmbed.description="".join(task for task in tasks)
                 view = confirm.ViewConfirm(ctx)
@@ -250,7 +250,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
             else:
                 tasks = []
                 for stuff in notes:
-                    tasks.append(F"[{stuff["number"]}.]({stuff['jump_url']}) {stuff['task']}\n")
+                    tasks.append(F"[{stuff['number']}.]({stuff['jump_url']}) {stuff['task']}\n")
                 ntmbed.title=F"{ctx.author.display_name}'s notes:"
                 ntmbed.description="".join(task for task in tasks)
         await ctx.reply(embed=ntmbed)
