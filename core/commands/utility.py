@@ -200,24 +200,32 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
         ntmbed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar.url)
         notes = await self.bot.mongodb.notes.find({"user_id": ctx.author.id}).to_list(length=None)
         if option == "add":
-            note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
-            ntmbed.description = value
-            if note:
-                ntmbed.title = "This task already in your notes:"
-            else:
-                ntmbed.title = "Added the task to your notes:"
-                await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "task": value, "jump_url": ctx.message.jump_url})
+            if value:
+                ntmbed.description = value
+                note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
+                if note:
+                    ntmbed.title = "This task already in your notes:"
+                else:
+                    ntmbed.title = "Added the task to your notes:"
+                    await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "number": notes[-1]["number"], "task": value, "jump_url": ctx.message.jump_url})
         elif option == "remove":
             if not notes:
                 ntmbed.title = "You don't have any note"
             else:
-                ntmbed.description = value
-                note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "task": value})
-                if note:
-                    ntmbed.title = "Removed the task from your notes:"
-                    await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "task": value})
+                if value:
+                    if value.isdigit():
+                        note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "number": int(value)})
+                        if note:
+                            ntmbed.title = "Removed the task from your notes:"
+                            ntmbed.description = note["task"]
+                            await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "number": int(value)})
+                            await database.collection.update_many({"user_id": ctx.user.id, "number": {"$gt": value}}, {"$inc": {"number": -1}}) 
+                        else:
+                            ntmbed.title = "This number is not in your notes:"
+                    else:
+                        ntmbed.title = "You need to pass a number"
                 else:
-                    ntmbed.title = "This number is not in your notes:"
+                    ntmbed.title = "You need to pass a value"
         elif option == "clear":
             if not notes:
                 ntmbed.title = "You don't have any note"
