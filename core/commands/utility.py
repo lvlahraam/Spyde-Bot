@@ -208,17 +208,20 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 else:
                     ntmbed.title = "Added the task to your notes:"
                     await self.bot.mongodb.notes.insert_one({"user_name": ctx.author.name, "user_id": ctx.author.id, "number": notes[-1]["number"], "task": value, "jump_url": ctx.message.jump_url})
+            else:
+                ntmbed.title = "You need to pass a value"
         elif option == "remove":
             if not notes:
                 ntmbed.title = "You don't have any note"
             else:
                 if value:
                     if value.isdigit():
-                        note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "number": int(value)})
+                        value = int(value)
+                        note = await self.bot.mongodb.notes.find_one({"user_id": ctx.author.id, "number": value})
                         if note:
                             ntmbed.title = "Removed the task from your notes:"
                             ntmbed.description = note["task"]
-                            await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "number": int(value)})
+                            await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "number": value})
                             await database.collection.update_many({"user_id": ctx.user.id, "number": {"$gt": value}}, {"$inc": {"number": -1}}) 
                         else:
                             ntmbed.title = "This number is not in your notes:"
@@ -231,10 +234,8 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 ntmbed.title = "You don't have any note"
             else:
                 tasks = []
-                counter = 0
                 for stuff in notes:
-                    tasks.append(F"[{counter}.]({stuff['jump_url']}) {stuff['task']}\n")
-                    counter += 1
+                    tasks.append(F"[{stuff["number"]}.]({stuff['jump_url']}) {stuff['task']}\n")
                 ntmbed.title=F"{ctx.author.display_name}'s notes:"
                 ntmbed.description="".join(task for task in tasks)
                 view = confirm.ViewConfirm(ctx)
@@ -248,10 +249,8 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                 ntmbed.title = F"{ctx.author.display_name} doesn't have any note"
             else:
                 tasks = []
-                counter = 0
                 for stuff in notes:
-                    tasks.append(F"[{counter}.]({stuff['jump_url']}) {stuff['task']}\n")
-                    counter += 1
+                    tasks.append(F"[{stuff["number"]}.]({stuff['jump_url']}) {stuff['task']}\n")
                 ntmbed.title=F"{ctx.author.display_name}'s notes:"
                 ntmbed.description="".join(task for task in tasks)
         await ctx.reply(embed=ntmbed)
