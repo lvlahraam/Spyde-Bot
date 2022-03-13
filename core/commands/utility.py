@@ -222,7 +222,7 @@ class Utility(commands.Cog, description="Useful stuff that are open to everyone"
                             ntmbed.title = "Removed the task from your notes:"
                             ntmbed.description = note["task"]
                             await self.bot.mongodb.notes.delete_one({"user_id": ctx.author.id, "number": value})
-                            await database.collection.update_many({"user_id": ctx.user.id, "number": {"$gt": value}}, {"$inc": {"number": -1}}) 
+                            await self.bot.mongodb.notes.update_many({"user_id": ctx.author.id, "number": {"$gt": value}}, {"$inc": {"number": -1}}) 
                         else:
                             ntmbed.title = "This number is not in your notes:"
                     else:
