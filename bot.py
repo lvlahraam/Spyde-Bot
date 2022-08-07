@@ -72,7 +72,7 @@ class SpydeBot(commands.Bot):
             if event.endswith(".py"):
                 await self.load_extension(f"core.events.{event[:-3]}")
                 self._events.append(event)
-        self.load_extension('jishaku')
+        await self.load_extension('jishaku')
 
     async def close(self):
         await self.session.close()
