@@ -1,5 +1,6 @@
 import discord
 
+
 class ViewConfirm(discord.ui.View):
     def __init__(self, ctx):
         super().__init__(timeout=None)
@@ -7,15 +8,19 @@ class ViewConfirm(discord.ui.View):
         self.value = None
 
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
-    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def confirm(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         self.value = True
         self.clear_items()
-        await interaction.response.edit_message(content="Confirmed", view=button.view, delete_after=2.5)
+        await interaction.response.edit_message(view=button.view)
+        await interaction.followup.send(content="Confirmed", ephemeral=True)
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = False
         self.clear_items()
-        await interaction.response.edit_message(content="Cancelled", view=button.view, delete_after=2.5)
+        await interaction.response.edit_message(view=button.view)
+        await interaction.followup.send(content="Cancelled", ephemeral=True)
         self.stop()
